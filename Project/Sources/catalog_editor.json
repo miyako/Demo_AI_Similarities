@@ -1,0 +1,76 @@
+{
+	"tables": {
+		"embeddingInfo": {
+			"color": {
+				"red": 255,
+				"green": 255,
+				"blue": 255,
+				"alpha": 0
+			},
+			"coordinates": {
+				"left": 350.125,
+				"top": 50.359375,
+				"width": 182.83203125,
+				"height": 220.7265625
+			},
+			"displayable_fields_count": 8
+		},
+		"providerSettings": {
+			"color": {
+				"red": 255,
+				"green": 255,
+				"blue": 255,
+				"alpha": 0
+			},
+			"coordinates": {
+				"left": 570.14453125,
+				"top": 49.3125,
+				"width": 182.78125,
+				"height": 222.68359375
+			},
+			"displayable_fields_count": 8,
+			"fields_ordering": 2,
+			"fields": {
+				"key": {
+					"position": 4
+				},
+				"models": {
+					"position": 8
+				},
+				"modelsToRemove": {
+					"position": 7
+				},
+				"modelsToKeep": {
+					"position": 6
+				},
+				"defaults": {
+					"position": 5
+				},
+				"url": {
+					"position": 3
+				},
+				"name": {
+					"position": 2
+				},
+				"ID": {
+					"position": 1
+				}
+			}
+		},
+		"customer": {
+			"color": {
+				"red": 255,
+				"green": 255,
+				"blue": 255,
+				"alpha": 0
+			},
+			"coordinates": {
+				"left": 166.71484375,
+				"top": 51.1015625,
+				"width": 145.98828125,
+				"height": 220.21875
+			},
+			"displayable_fields_count": 8
+		}
+	}
+}

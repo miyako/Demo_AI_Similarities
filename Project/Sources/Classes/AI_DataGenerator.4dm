@@ -1,0 +1,155 @@
+property customerExpectedSchema : Object
+property addressExpectedSchema : Object
+property singleCustomerExpectedSchema : Object
+property customerColExpectedSchema : Collection
+property addressColExpectedSchema : Collection
+property customerSystemPrompt : Text
+property addressSystemPrompt : Text
+property singleCustomerSystemPrompt : Text
+
+
+Class extends AI_Agent
+
+Class constructor($providerName : Text; $model : Text)
+	Super($providerName; $model)
+	This.customerExpectedSchema:={firstname: "firstname"; lastname: "lastname"; email: "firstname.lastname@randomdomain.com"; phone: "random phone number"}
+	This.addressExpectedSchema:={streetNumber: "number"; streetName: "street name"; apartment: "number"; builing: "building"; poBox: "po box"; city: "city"; region: "region"; postalCode: "postal code"; country: "country"}
+	This.customerColExpectedSchema:=[This.customerExpectedSchema]
+	This.addressColExpectedSchema:=[This.addressColExpectedSchema]
+	This.singleCustomerExpectedSchema:=OB Copy(This.customerExpectedSchema)
+	This.singleCustomerExpectedSchema.address:=OB Copy(This.addressExpectedSchema)
+	
+	This.customerSystemPrompt:="You are a data generating assistant. Your answers are used to populate a database. Your answers are stricly JSON formatted, no greetings, no conclusion, just pure json."+\
+		"I will ask you to generate json arrays to populate a customer table. "+\
+		"I will just ask you to generate a certain amount of records, and you will provide me the answer as a json array. "+\
+		"The json array must have the following schema, here provided for 1 customer: "+JSON Stringify(This.customerExpectedSchema)+". "+\
+		"avoid generic names like john doe, prefer realistic ones. "+\
+		"avoid generic email domains like example.com, prefer realistic ones."
+	This.addressSystemPrompt:="You are a data generating assistant. Your answers are used to populate a database. Your answers are stricly JSON formatted, no greetings, no conclusion, just pure json."+\
+		"I will ask you to generate json arrays of structured address objects. "+\
+		"I will just ask you to generate a certain amount of records, and you will provide me the answer as a json array. "+\
+		"The json array must have the following schema, here provided for 1 address: "+JSON Stringify(This.addressExpectedSchema)+". "+\
+		"Note that not all address attributes are mandatory."
+	This.singleCustomerSystemPrompt:="You are a data generating assistant. Your answers are used to populate a database. Your answers are stricly JSON formatted, no greetings, no conclusion, just pure json."+\
+		"I will ask you to generate a json object to populate a customer table. "+\
+		"The json object must have the following schema: "+JSON Stringify(This.singleCustomerExpectedSchema)+". "+\
+		"avoid generic names like john doe, prefer realistic ones. "+\
+		"avoid generic email domains like example.com, prefer realistic ones. "+\
+		"Note that not all address attributes are mandatory."
+	
+Function generateRandomCustomerObject() : Object
+	var $customerGenBot : cs.AIKit.OpenAIChatHelper
+	var $addressGenBot : cs.AIKit.OpenAIChatHelper
+	var $prompt : Text
+	var $AIResponse : Object
+	var $result : Object
+	
+	$customerGenBot:=This.AIClient.chat.create(This.singleCustomerSystemPrompt; {model: This.model})
+	$prompt:="generate 1 customer"
+	$AIResponse:=$customerGenBot.prompt($prompt)
+	$result:=This.getAIStructuredResponse($AIResponse; Is object)
+	If ($result.success)
+		return $result.response
+	Else 
+		return {}
+	End if 
+	
+Function generateRandomCustomer() : cs.customerEntity
+	var $customerObject : Object
+	
+	$customerObject:=This.generateRandomCustomerObject()
+	return ds.customer.newCustomerFromObject($customerObject)
+	
+	
+Function generateData()
+	This.generateCustomers(30; 10)
+	This.populateAddresses(10)
+	
+Function populateAddresses($quantityBy : Integer; $callback : Object)
+	var $addressGenBot : cs.AIKit.OpenAIChatHelper
+	var $customers : cs.customerSelection
+	var $customer : cs.customerEntity
+	var $addresses : Collection:=[]
+	var $prompt : Text
+	var $AIResponse : Object
+	var $result : Object
+	var $failedAttempts : Integer:=0
+	var $maxFailedAttempts : Integer:=10
+	var $total : Integer
+	var $populated : Integer
+	var $progress : Object
+	
+	$addressGenBot:=This.AIClient.chat.create(This.addressSystemPrompt; {model: This.model})
+	
+	$customers:=ds.customer.all().query("address = null")
+	$total:=$customers.length
+	$populated:=0
+	$progress:={}
+	
+	For each ($customer; $customers) While ($failedAttempts<=10)
+		If ($customer.address=Null)
+			While (($addresses.length=0) && ($failedAttempts<=10))
+				$prompt:="generate "+String($quantityBy)+" addresses"
+				$AIResponse:=$addressGenBot.prompt($prompt)
+				$result:=This.getAIStructuredResponse($AIResponse; Is collection)
+				If ($result.success)
+					$addresses:=$result.response
+				Else 
+					$failedAttempts+=1
+				End if 
+			End while 
+			
+			If ($addresses.length>0)
+				$customer.address:=cs.address.new($addresses.pop())
+				$customer.save()
+				If ($callback#Null)
+					$populated+=1
+					$progress.value:=Int($populated/$total*100)
+					$progress.message:="Populating addresses "+String($populated)+"/"+String($total)
+					CALL FORM($callback.window; $callback.formula; $progress)
+				End if 
+			End if 
+		End if 
+	End for each 
+	
+Function generateCustomers($quantity : Integer; $quantityBy : Integer; $callback : Object)
+	var $customerGenBot : cs.AIKit.OpenAIChatHelper
+	var $alreadyThere : Integer
+	var $generated : Integer:=0
+	var $toGenerate : Integer
+	var $prompt : Text
+	var $AIResponse : Object
+	var $result : Object
+	var $customers : Collection
+	var $failedAttempts : Integer:=0
+	var $maxFailedAttempts : Integer:=10
+	var $progress : Object
+	
+	$progress:={}
+	$customerGenBot:=This.AIClient.chat.create(This.customerSystemPrompt; {model: This.model})
+	$alreadyThere:=ds.customer.all().length
+	
+	While (($generated<$quantity) && ($failedAttempts<=$maxFailedAttempts))
+		$toGenerate:=($quantityBy<($quantity-$generated)) ? $quantityBy : ($quantity-$generated)
+		$prompt:="generate "+String($toGenerate)+" customers"
+		$AIResponse:=$customerGenBot.prompt($prompt)
+		$result:=This.getAIStructuredResponse($AIResponse; Is collection)
+		If ($result.success)
+			ds.customer.fromCollection($result.response)
+			$generated:=ds.customer.all().length-$alreadyThere
+			
+			If ($callback#Null)
+				$progress.value:=Int($generated/$quantity*100)
+				$progress.message:="Generating customers "+String($generated)+"/"+String($quantity)
+				CALL FORM($callback.window; $callback.formula; $progress)
+			End if 
+		Else 
+			$failedAttempts+=1
+		End if 
+	End while 
+	
+	
+	
+	
+	
+	

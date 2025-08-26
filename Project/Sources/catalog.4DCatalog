@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE base SYSTEM "http://www.4d.com/dtd/2007/base.dtd" >
+<base name="Demo_AI_Similarities" uuid="01987A4B43787208BA79DAB0439725D6" collation_locale="en">
+	<schema name="DEFAULT_SCHEMA"/>
+	<table name="customer" uuid="01987A4BCDA77FBA8E7A4BB18AF3D180" id="1">
+		<field name="ID" uuid="01987A4BCDA874E5B938E48EAEFE611F" type="10" unique="true" autogenerate="true" store_as_UUID="true" not_null="true" id="1"/>
+		<field name="firstname" uuid="01987A4C04257E5A921205F3957E885E" type="10" limiting_length="255" id="2"/>
+		<field name="lastname" uuid="01987A4C85477D9D8D94D537317C266D" type="10" limiting_length="255" id="3">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="email" uuid="01987A4C94F0753F912D09D3A7986619" type="10" limiting_length="255" id="4">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="phone" uuid="01987A4C9A0F751A873B609CDD4B4BA2" type="10" limiting_length="255" id="5">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="address" uuid="01987A4CD6777F5892D97B4E6EECF333" type="21" blob_switch_size="2147483647" id="6" class_id="cs.address">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="vector" uuid="0198898262D07F0A98B2008E77930C62" type="21" blob_switch_size="2147483647" id="7" class_id="4D.Vector"/>
+		<primary_key field_name="ID" field_uuid="01987A4BCDA874E5B938E48EAEFE611F"/>
+	</table>
+	<table name="providerSettings" uuid="0198C6A4193672FDB6704E91969E11C2" id="2">
+		<field name="ID" uuid="0198C6A4193B7922BBC2562ED3B508DA" type="10" unique="true" autogenerate="true" store_as_UUID="true" not_null="true" id="1"/>
+		<field name="name" uuid="0198C6A583167D26863D5A88339319E6" type="10" limiting_length="255" id="2"/>
+		<field name="url" uuid="0198C6A597037526AB173AF9AD05C2FF" type="10" limiting_length="255" id="3">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="defaults" uuid="0198C6A5AD9F789FA747A9825A83397A" type="21" blob_switch_size="2147483647" id="4">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="modelsToKeep" uuid="0198C6A5BF377ADDA0215033616AD8BE" type="21" blob_switch_size="2147483647" id="5">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="modelsToRemove" uuid="0198C6A5CEE5761C94BCD4F55B582ADD" type="21" blob_switch_size="2147483647" id="6">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="models" uuid="0198C6A5DB177D02B767917F8186083A" type="21" blob_switch_size="2147483647" id="7">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="key" uuid="0198C6BE7C767E76B518E918BB7C01D0" type="10" limiting_length="255" id="8"/>
+		<primary_key field_name="ID" field_uuid="0198C6A4193B7922BBC2562ED3B508DA"/>
+	</table>
+	<table name="embeddingInfo" uuid="019899973C677418B01A6F3CA2372730" id="3">
+		<field name="ID" uuid="019899973C697722BF27A3D77F4D1844" type="10" unique="true" autogenerate="true" store_as_UUID="true" not_null="true" id="1"/>
+		<field name="provider" uuid="01989997BE0A7F60BD1F4053A41F980E" type="10" limiting_length="255" id="2"/>
+		<field name="model" uuid="01989997D49D776C8969D85B284E28D2" type="10" limiting_length="255" id="3"/>
+		<field name="embeddingDate" uuid="01989997E34C74AC9FBAC3D0085924E2" type="8" id="4"/>
+		<field name="embeddingTime" uuid="019899981CE8727686361E3A37B5A180" type="9" id="5"/>
+		<field name="duration" uuid="019899C2D8007160A568146A3B206C64" type="9" id="6"/>
+		<primary_key field_name="ID" field_uuid="019899973C697722BF27A3D77F4D1844"/>
+	</table>
+	<index kind="regular" unique_keys="true" uuid="01987A4BCDA975FBA8DF9776075CFA11" type="7">
+		<field_ref uuid="01987A4BCDA874E5B938E48EAEFE611F" name="ID">
+			<table_ref uuid="01987A4BCDA77FBA8E7A4BB18AF3D180" name="customer"/>
+		</field_ref>
+	</index>
+	<index kind="regular" unique_keys="true" uuid="019899973C6A7760AF520D0B8CE7D30E" type="7">
+		<field_ref uuid="019899973C697722BF27A3D77F4D1844" name="ID">
+			<table_ref uuid="019899973C677418B01A6F3CA2372730" name="embeddingInfo"/>
+		</field_ref>
+	</index>
+	<index kind="regular" unique_keys="true" uuid="0198C6A4193F788BB73098875BA168D5" type="7">
+		<field_ref uuid="0198C6A4193B7922BBC2562ED3B508DA" name="ID">
+			<table_ref uuid="0198C6A4193672FDB6704E91969E11C2" name="providerSettings"/>
+		</field_ref>
+	</index>
+	<base_extra>
+		<journal_file journal_file_enabled="true"/>
+	</base_extra>
+</base>
