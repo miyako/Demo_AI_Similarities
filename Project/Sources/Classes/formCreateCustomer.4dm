@@ -100,7 +100,7 @@ Function btnNewCustomerEventHandler($formEventCode : Integer)
 	
 Function btnSaveCustomerEventHandler($formEventCode : Integer)
 	Case of 
-		: ($formEventCodee=On Clicked)
+		: ($formEventCode=On Clicked)
 			If (This.newCustomer.valid)
 				This.newCustomer.saveAndVectorize()
 			Else 
