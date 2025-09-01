@@ -1,53 +1,188 @@
 [
-  {
-    "name": "OpenAI",
-    "url": "",
-    "key": "",
-    "defaults": {
-      "embedding": "text-embedding-ada-002",
-      "reasonning": "gpt-4.1-2025-04-14"
-    },
-    "modelsToKeep": {
-      "values": [
-        "gpt-@",
-        "text-embedding@",
-        "chatgpt-@",
-        "o1-@",
-        "o3-@",
-        "o4-@",
-        "computer-@"
-      ]
-    },
-    "modelsToRemove": {
-      "values": [
-        "gpt-image@",
-        "@audio@",
-        "@transcribe@",
-        "@tts@",
-        "@search@",
-        "@realtime@"
-      ]
-    },
-    "models": {
-      "values": []
-    }
-  },
-  {
-    "name": "Ollama",
-    "url": "http://localhost:11434/v1",
-    "key": "",
-    "defaults": {
-      "embedding": "nomic-embed-text:latest",
-      "reasonning": "mistral:latest"
-    },
-    "modelsToKeep": {
-      "values": []
-    },
-    "modelsToRemove": {
-      "values": []
-    },
-    "models": {
-      "values": []
-    }
-  }
+	{
+		"name": "OpenAI",
+		"url": "",
+		"key": "",
+		"defaults": {
+			"embedding": "text-embedding-ada-002",
+			"reasonning": "gpt-4.1-2025-04-14"
+		},
+		"modelsToKeep": {
+			"values": [
+				"gpt-@",
+				"text-embedding@",
+				"chatgpt-@",
+				"o1-@",
+				"o3-@",
+				"o4-@",
+				"computer-@"
+			]
+		},
+		"modelsToRemove": {
+			"values": [
+				"gpt-image@",
+				"@audio@",
+				"@transcribe@",
+				"@tts@",
+				"@search@",
+				"@realtime@"
+			]
+		},
+		"models": [
+			{
+				"model": "chatgpt-4o-latest"
+			},
+			{
+				"model": "gpt-3.5-turbo"
+			},
+			{
+				"model": "gpt-3.5-turbo-0125"
+			},
+			{
+				"model": "gpt-3.5-turbo-1106"
+			},
+			{
+				"model": "gpt-3.5-turbo-16k"
+			},
+			{
+				"model": "gpt-3.5-turbo-instruct"
+			},
+			{
+				"model": "gpt-3.5-turbo-instruct-0914"
+			},
+			{
+				"model": "gpt-4"
+			},
+			{
+				"model": "gpt-4-0125-preview"
+			},
+			{
+				"model": "gpt-4-0613"
+			},
+			{
+				"model": "gpt-4-1106-preview"
+			},
+			{
+				"model": "gpt-4-turbo"
+			},
+			{
+				"model": "gpt-4-turbo-2024-04-09"
+			},
+			{
+				"model": "gpt-4-turbo-preview"
+			},
+			{
+				"model": "gpt-4.1"
+			},
+			{
+				"model": "gpt-4.1-2025-04-14"
+			},
+			{
+				"model": "gpt-4.1-mini"
+			},
+			{
+				"model": "gpt-4.1-mini-2025-04-14"
+			},
+			{
+				"model": "gpt-4.1-nano"
+			},
+			{
+				"model": "gpt-4.1-nano-2025-04-14"
+			},
+			{
+				"model": "gpt-4o"
+			},
+			{
+				"model": "gpt-4o-2024-05-13"
+			},
+			{
+				"model": "gpt-4o-2024-08-06"
+			},
+			{
+				"model": "gpt-4o-2024-11-20"
+			},
+			{
+				"model": "gpt-4o-mini"
+			},
+			{
+				"model": "gpt-4o-mini-2024-07-18"
+			},
+			{
+				"model": "gpt-5"
+			},
+			{
+				"model": "gpt-5-2025-08-07"
+			},
+			{
+				"model": "gpt-5-chat-latest"
+			},
+			{
+				"model": "gpt-5-mini"
+			},
+			{
+				"model": "gpt-5-mini-2025-08-07"
+			},
+			{
+				"model": "gpt-5-nano"
+			},
+			{
+				"model": "gpt-5-nano-2025-08-07"
+			},
+			{
+				"model": "o1-2024-12-17"
+			},
+			{
+				"model": "o1-mini"
+			},
+			{
+				"model": "o1-mini-2024-09-12"
+			},
+			{
+				"model": "o1-pro"
+			},
+			{
+				"model": "o1-pro-2025-03-19"
+			},
+			{
+				"model": "o3-2025-04-16"
+			},
+			{
+				"model": "o3-mini"
+			},
+			{
+				"model": "o3-mini-2025-01-31"
+			},
+			{
+				"model": "o4-mini"
+			},
+			{
+				"model": "o4-mini-2025-04-16"
+			},
+			{
+				"model": "text-embedding-3-large"
+			},
+			{
+				"model": "text-embedding-3-small"
+			},
+			{
+				"model": "text-embedding-ada-002"
+			}
+		]
+	},
+	{
+		"name": "Ollama",
+		"url": "http://localhost:11434/v1",
+		"key": "",
+		"defaults": {
+			"embedding": "nomic-embed-text:latest",
+			"reasonning": "mistral:latest"
+		},
+		"modelsToKeep": {
+			"values": []
+		},
+		"modelsToRemove": {
+			"values": []
+		},
+		"models": []
+	}
 ]
