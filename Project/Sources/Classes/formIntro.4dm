@@ -75,10 +75,6 @@ Function onClicked() : cs.formIntro
 	Case of 
 		: ($event.objectName="btnRefresh")
 			
-			//ds.providerSettings.updateProviderSettings()
-			
-			//This.allProviders()
-			
 			This.updateProviderSettings()
 			
 		: ($event.objectName="openAILink")

@@ -1,18 +1,23 @@
 Class extends DataClass
 
-
-Function openProviderFile($path : Text) : Collection
-	var $jsonText : Text
+Function getProvidersListFromFile($path : Text) : Collection
 	
-	$jsonText:=File($path).getText()
-	return JSON Parse($jsonText; Is collection)
+	If ($path="")
+		return []
+	End if 
+	
+	var $file : 4D.File
+	$file:=File($path)
+	
+	If (Not($file.exists))
+		return []
+	End if 
+	
+	return JSON Parse($file.getText(); Is collection)
 	
 Function loadDefaults()
-	var $providersFilePath:="/RESOURCES/AIProviders.json"
-	var $jsonContent : Collection
 	
-	$jsonContent:=This.openProviderFile($providersFilePath)
-	This.fromCollection($jsonContent)
+	This.fromCollection(This.getProvidersListFromFile("/RESOURCES/AIProviders.json"))
 	
 Function updateProviderSettings()
 	var $providers : cs.providerSettingsSelection:=This.all()
@@ -64,7 +69,6 @@ Function updateProviderSettings()
 		$provider.save()
 		
 	End for each 
-	
 	
 Function add() : cs.providerSettingsEntity
 	
