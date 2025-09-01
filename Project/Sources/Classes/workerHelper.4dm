@@ -64,16 +64,3 @@ Function searchSimilarCustomers($formObject : Object; $customerObject : Object; 
 	$timing:=Milliseconds-$startMillisecond
 	
 	CALL FORM($window; Formula($formObject.terminateSearchSimilarCustomers($similarCustomers; $timing)))
-	
-	
-/**
-* List similar customers for all customers
-**/
-Function searchAllSimilarCustomers($formObject : Object; $window : Integer)
-	var $startMillisecond; $timing : Integer
-	var $customersWithSimilarities : Collection
-	
-	$startMillisecond:=Milliseconds
-	$customersWithSimilarities:=ds.customer.customersWithSimilarities($formObject.actions.searchingSimilarities.similarityLevel/100)
-	$timing:=Milliseconds-$startMillisecond
-	CALL FORM($window; Formula($formObject.terminateSearchAllSimilarCustomers($customersWithSimilarities; $timing)))

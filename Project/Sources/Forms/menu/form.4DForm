@@ -12,50 +12,17 @@
 	"rightMargin": 0,
 	"bottomMargin": 0,
 	"events": [
-		"onLoad",
-		"onPageChange",
-		"onValidate",
 		"onClick",
-		"onDoubleClick",
-		"onOutsideCall",
-		"onBeginDragOver",
-		"onDragOver",
-		"onDrop",
-		"onAfterKeystroke",
-		"onMenuSelect",
-		"onPluginArea",
-		"onAfterEdit",
-		"onTimer",
-		"onBoundVariableChange"
+		"onDataChange",
+		"onSelectionChange",
+		"onPageChange"
 	],
 	"windowTitle": "AI Duplicate detection",
 	"destination": "detailScreen",
 	"pages": [
 		{
-			"objects": {}
-		},
-		{
 			"objects": {
-				"Rectangle": {
-					"type": "rectangle",
-					"top": 34,
-					"left": 0,
-					"width": 1448,
-					"height": 660,
-					"stroke": "transparent",
-					"strokeWidth": 0
-				},
-				"Subform": {
-					"type": "subform",
-					"left": 0,
-					"top": 34,
-					"width": 1448,
-					"height": 660,
-					"dataSource": "Form:C1466.subformName",
-					"dataSourceTypeHint": "text",
-					"detailForm": "intro"
-				},
-				"Tab Control": {
+				"menu": {
 					"type": "tab",
 					"text": "Tab control",
 					"top": 4,
@@ -65,23 +32,882 @@
 					"dataSource": "Form:C1466.menu",
 					"fontFamily": "Avenir Light",
 					"fontSize": 16,
-					"method": "ObjectMethods/Tab Control.4dm",
 					"events": [
 						"onClick"
 					]
+				},
+				"Rectangle": {
+					"type": "rectangle",
+					"top": 34,
+					"left": 0,
+					"width": 1448,
+					"height": 660,
+					"stroke": "transparent",
+					"strokeWidth": 0
+				},
+				"Rectangle8": {
+					"type": "rectangle",
+					"top": 34,
+					"left": 0,
+					"width": 1450,
+					"height": 44,
+					"fill": "#b1c4dd",
+					"stroke": "transparent"
+				}
+			}
+		},
+		{
+			"objects": {
+				"Text5": {
+					"type": "text",
+					"text": "AI providers list",
+					"top": 108,
+					"left": 283,
+					"width": 955,
+					"height": 22,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16
+				},
+				"ProvidersListBox": {
+					"type": "listbox",
+					"left": 283,
+					"top": 137,
+					"width": 1015,
+					"height": 188,
+					"events": [
+						"onClick",
+						"onHeaderClick",
+						"onDataChange",
+						"onSelectionChange"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.providers",
+					"currentItemSource": "Form:C1466.providersListBox.currentItem",
+					"selectionMode": "single",
+					"singleClickEdit": true,
+					"hideFocusRing": true,
+					"selectedItemsSource": "Form:C1466.providersListBox.selectedItems",
+					"currentItemPositionSource": "Form:C1466.providersListBox.currentItemPos",
+					"fontFamily": "Avenir Light",
+					"fontSize": 12,
+					"headerHeight": "2em",
+					"scrollbarHorizontal": "hidden",
+					"columns": [
+						{
+							"header": {
+								"text": "Provider",
+								"name": "Header2"
+							},
+							"name": "Column2",
+							"footer": {
+								"name": "Footer2"
+							},
+							"dataSource": "This:C1470.name",
+							"width": 300,
+							"enterable": false,
+							"resizable": false
+						},
+						{
+							"header": {
+								"name": "Header9",
+								"text": "Url"
+							},
+							"name": "Column9",
+							"dataSource": "This:C1470.url",
+							"footer": {
+								"name": "Footer9"
+							},
+							"width": 400,
+							"resizable": false,
+							"enterable": false
+						},
+						{
+							"header": {
+								"name": "Header14",
+								"text": "Available\\reasonning models"
+							},
+							"name": "Column14",
+							"dataSource": "This:C1470.reasonningModels.models.length",
+							"dataSourceTypeHint": "number",
+							"footer": {
+								"name": "Footer14"
+							},
+							"width": 150,
+							"enterable": false,
+							"resizable": false
+						},
+						{
+							"header": {
+								"name": "Header15",
+								"text": "Available\\embedding models"
+							},
+							"name": "Column15",
+							"dataSource": "This:C1470.embeddingModels.models.length",
+							"dataSourceTypeHint": "number",
+							"footer": {
+								"name": "Footer15"
+							},
+							"width": 150,
+							"enterable": false,
+							"resizable": false
+						}
+					]
+				},
+				"Text6": {
+					"type": "text",
+					"text": "OpenAI: if no models are available, review your api key.",
+					"top": 351,
+					"left": 283,
+					"width": 324,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text7": {
+					"type": "text",
+					"text": "Ollama: if no models are available, ",
+					"top": 378,
+					"left": 283,
+					"width": 199,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"ollamaLink": {
+					"type": "input",
+					"top": 378,
+					"left": 484,
+					"width": 91,
+					"height": 19,
+					"dataSource": "\"install Ollama\"",
+					"stroke": "#1E90FF",
+					"textDecoration": "underline",
+					"focusable": false,
+					"fill": "transparent",
+					"borderStyle": "none",
+					"enterable": false,
+					"dragging": "none",
+					"dropping": "custom",
+					"method": "ObjectMethods/ollamaLink.4dm",
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"contextMenu": "automatic"
+				},
+				"Text8": {
+					"type": "text",
+					"text": ", setup the proper url and port then pull some",
+					"top": 378,
+					"left": 564,
+					"width": 269,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"ollamaModels": {
+					"type": "input",
+					"top": 379,
+					"left": 831,
+					"width": 178,
+					"height": 19,
+					"dataSource": "\"models from Ollama library\"",
+					"stroke": "#1E90FF",
+					"textDecoration": "underline",
+					"focusable": false,
+					"fill": "transparent",
+					"borderStyle": "none",
+					"enterable": false,
+					"dragging": "none",
+					"dropping": "custom",
+					"method": "ObjectMethods/ollamaModels.4dm",
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"openAILink": {
+					"type": "input",
+					"top": 351,
+					"left": 604,
+					"width": 341,
+					"height": 19,
+					"dataSource": "\"Checkout openAI models to know more about them.\"",
+					"stroke": "#1E90FF",
+					"textDecoration": "underline",
+					"focusable": false,
+					"fill": "transparent",
+					"borderStyle": "none",
+					"enterable": false,
+					"dragging": "none",
+					"dropping": "custom",
+					"method": "ObjectMethods/openAILink.4dm",
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"btnRefresh": {
+					"type": "button",
+					"text": "Refresh",
+					"top": 632,
+					"left": 723,
+					"width": 115,
+					"height": 31,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"method": "ObjectMethods/btnRefresh.4dm",
+					"defaultButton": true
+				},
+				"Input2": {
+					"type": "input",
+					"left": 488,
+					"top": 491,
+					"width": 350,
+					"height": 18,
+					"dataSource": "Form:C1466.providersListBox.currentItem.name",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "solid",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer",
+					"multiline": "no",
+					"method": "ObjectMethods/genericInput.4dm",
+					"events": [
+						"onDataChange"
+					],
+					"placeholder": "Provider name"
+				},
+				"Text9": {
+					"type": "text",
+					"text": "Provider name:",
+					"top": 491,
+					"left": 284,
+					"width": 180,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Input1": {
+					"type": "input",
+					"left": 488,
+					"top": 519,
+					"width": 350,
+					"height": 18,
+					"dataSource": "Form:C1466.providersListBox.currentItem.url",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "solid",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer",
+					"multiline": "no",
+					"events": [
+						"onDataChange"
+					],
+					"method": "ObjectMethods/Input1.4dm",
+					"placeholder": "Leave empty for OpenAI"
+				},
+				"Text10": {
+					"type": "text",
+					"text": "Provider url:",
+					"top": 519,
+					"left": 284,
+					"width": 180,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Input3": {
+					"type": "input",
+					"left": 488,
+					"top": 578,
+					"width": 350,
+					"height": 18,
+					"dataSource": "Form:C1466.providersListBox.currentItem.defaults.embedding",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "solid",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer",
+					"multiline": "no",
+					"events": [
+						"onDataChange"
+					],
+					"method": "ObjectMethods/Input3.4dm",
+					"placeholder": "Will be selected by default for embeddings"
+				},
+				"Text11": {
+					"type": "text",
+					"text": "Default embedding model:",
+					"top": 578,
+					"left": 284,
+					"width": 180,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Input4": {
+					"type": "input",
+					"left": 488,
+					"top": 607,
+					"width": 350,
+					"height": 18,
+					"dataSource": "Form:C1466.providersListBox.currentItem.defaults.reasonning",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "solid",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer",
+					"multiline": "no",
+					"events": [
+						"onDataChange"
+					],
+					"method": "ObjectMethods/Input4.4dm",
+					"placeholder": "Will be selected by default for generative AI"
+				},
+				"Text12": {
+					"type": "text",
+					"text": "Default reasonning model:",
+					"top": 607,
+					"left": 284,
+					"width": 180,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"btnAdd": {
+					"type": "button",
+					"text": "Add",
+					"top": 294,
+					"left": 1314,
+					"width": 115,
+					"height": 31,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"method": "ObjectMethods/btnAdd.4dm",
+					"style": "regular"
+				},
+				"List Box2": {
+					"type": "listbox",
+					"left": 858,
+					"top": 491,
+					"width": 280,
+					"height": 172,
+					"events": [
+						"onClick",
+						"onHeaderClick",
+						"onDataChange",
+						"onSelectionChange"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.providersListBox.currentItem.reasonningModels.models",
+					"currentItemSource": "",
+					"selectionMode": "single",
+					"singleClickEdit": true,
+					"hideFocusRing": true,
+					"selectedItemsSource": "",
+					"currentItemPositionSource": "",
+					"fontFamily": "Avenir Light",
+					"fontSize": 12,
+					"scrollbarHorizontal": "hidden",
+					"columns": [
+						{
+							"header": {
+								"text": "Reasonning models",
+								"name": "Header16"
+							},
+							"name": "Column16",
+							"footer": {
+								"name": "Footer16"
+							},
+							"dataSource": "This:C1470.model",
+							"width": 274,
+							"enterable": false,
+							"resizable": false
+						}
+					]
+				},
+				"Input5": {
+					"type": "input",
+					"left": 488,
+					"top": 548,
+					"width": 350,
+					"height": 18,
+					"dataSource": "Form:C1466.providersListBox.currentItem.keyHidden",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "solid",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "text",
+					"multiline": "no",
+					"events": [
+						"onDataChange"
+					],
+					"method": "ObjectMethods/Input5.4dm",
+					"placeholder": "Leave empty for local Ollama"
+				},
+				"Text2": {
+					"type": "text",
+					"text": "Provider API Key:",
+					"top": 548,
+					"left": 284,
+					"width": 180,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"btnDelete": {
+					"type": "button",
+					"text": "Delete",
+					"top": 255,
+					"left": 1314,
+					"width": 115,
+					"height": 31,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"style": "regular",
+					"method": "ObjectMethods/btnDelete.4dm"
+				},
+				"Text3": {
+					"type": "text",
+					"text": "Feel free to add your preferred",
+					"top": 406,
+					"left": 284,
+					"width": 181,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"openAIKitLink": {
+					"type": "input",
+					"top": 406,
+					"left": 465,
+					"width": 223,
+					"height": 19,
+					"dataSource": "\"4D AI Kit compatible provider!\"",
+					"stroke": "#1E90FF",
+					"textDecoration": "underline",
+					"focusable": false,
+					"fill": "transparent",
+					"borderStyle": "none",
+					"enterable": false,
+					"dragging": "none",
+					"dropping": "custom",
+					"method": "ObjectMethods/openAIKitLink.4dm",
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Rectangle3": {
+					"type": "rectangle",
+					"top": 98,
+					"left": 23,
+					"width": 239,
+					"height": 582,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#FBFBFB"
+				},
+				"Text13": {
+					"type": "text",
+					"text": "This demo will teach you how to use 4D AI feature to detect duplicates in a database.\r\rIt comes with a pre-generated database.\r\rDemo features marked with 🪄, require at least one AI provider to be properly set.\r\rBefore using such features, review the table on the right and setup your AI providers so that at least 1 model gets listed as available.\r\rVocabulary:\rReasonning models are used by generative AI. They are used in this demo to generate customers in database or for address formatting.\r\rEmbedding models are used to compute embeddings.\r\rEmbedding is the process that transforms data (often text) into a vector. The resulting vector is also called an embedding.",
+					"top": 108,
+					"left": 32,
+					"width": 219,
+					"height": 556,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text4": {
+					"type": "text",
+					"text": "Selected provider",
+					"top": 457,
+					"left": 283,
+					"width": 955,
+					"height": 22,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16
+				},
+				"List Box3": {
+					"type": "listbox",
+					"left": 1149,
+					"top": 491,
+					"width": 280,
+					"height": 172,
+					"events": [
+						"onClick",
+						"onHeaderClick",
+						"onDataChange",
+						"onSelectionChange"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.providersListBox.currentItem.embeddingModels.models",
+					"currentItemSource": "",
+					"selectionMode": "single",
+					"singleClickEdit": true,
+					"hideFocusRing": true,
+					"selectedItemsSource": "",
+					"currentItemPositionSource": "",
+					"fontFamily": "Avenir Light",
+					"fontSize": 12,
+					"scrollbarHorizontal": "hidden",
+					"columns": [
+						{
+							"header": {
+								"text": "Embedding models",
+								"name": "Header17"
+							},
+							"name": "Column17",
+							"footer": {
+								"name": "Footer17"
+							},
+							"dataSource": "This:C1470.model",
+							"width": 274,
+							"enterable": false,
+							"resizable": false
+						}
+					]
+				},
+				"Text14": {
+					"type": "text",
+					"text": "Introduction and setup",
+					"top": 42,
+					"left": 23,
+					"width": 314,
+					"height": 28,
+					"fontFamily": "Avenir Light",
+					"fontSize": 20
+				}
+			}
+		},
+		{
+			"objects": {
+				"Rectangle2": {
+					"type": "rectangle",
+					"top": 98,
+					"left": 23,
+					"width": 239,
+					"height": 582,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#FBFBFB"
+				},
+				"customersWithSimilarities": {
+					"type": "listbox",
+					"left": 283,
+					"top": 136,
+					"width": 1142,
+					"height": 240,
+					"events": [],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.customersWithSimilarities",
+					"selectionMode": "single",
+					"currentItemSource": "Form:C1466.selectedCustomer",
+					"hideFocusRing": true,
+					"showFooters": true,
+					"fontFamily": "Avenir Light",
+					"fontSize": 12,
+					"scrollbarHorizontal": "hidden",
+					"columns": [
+						{
+							"header": {
+								"name": "Header13",
+								"text": "Best match"
+							},
+							"name": "Column13",
+							"footer": {
+								"name": "Footer13"
+							},
+							"dataSource": "This:C1470.bestMatch",
+							"width": 150
+						},
+						{
+							"header": {
+								"name": "Header6",
+								"text": "Similarities found"
+							},
+							"name": "Column6",
+							"footer": {
+								"name": "Footer6",
+								"variableCalculation": "sum"
+							},
+							"dataSource": "This:C1470.similarities.length",
+							"width": 100,
+							"dataSourceTypeHint": "number"
+						},
+						{
+							"header": {
+								"text": "Fullname",
+								"name": "Header1"
+							},
+							"name": "Column1",
+							"footer": {
+								"name": "Footer1"
+							},
+							"dataSource": "This:C1470.entity.fullname",
+							"width": 200
+						},
+						{
+							"header": {
+								"name": "Header3",
+								"text": "Email"
+							},
+							"name": "Column3",
+							"footer": {
+								"name": "Footer3"
+							},
+							"dataSource": "This:C1470.entity.email",
+							"width": 200
+						},
+						{
+							"header": {
+								"name": "Header4",
+								"text": "Phone"
+							},
+							"name": "Column4",
+							"footer": {
+								"name": "Footer4"
+							},
+							"dataSource": "This:C1470.entity.phone",
+							"width": 150
+						},
+						{
+							"header": {
+								"name": "Header5",
+								"text": "Address"
+							},
+							"name": "Column5",
+							"footer": {
+								"name": "Footer5"
+							},
+							"dataSource": "This:C1470.entity.address.str",
+							"width": 327
+						}
+					]
+				},
+				"similarCustomers": {
+					"type": "listbox",
+					"left": 283,
+					"top": 423,
+					"width": 1142,
+					"height": 240,
+					"events": [
+						"onClick",
+						"onHeaderClick",
+						"onDataChange",
+						"onSelectionChange"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.similarCustomers",
+					"fontFamily": "Avenir Light",
+					"fontSize": 12,
+					"scrollbarHorizontal": "hidden",
+					"columns": [
+						{
+							"header": {
+								"name": "Header7",
+								"text": "Similarity",
+								"dataSource": ""
+							},
+							"name": "Column7",
+							"footer": {
+								"name": "Footer7"
+							},
+							"dataSource": "This:C1470.similarity",
+							"dataSourceTypeHint": "number",
+							"truncateMode": "none",
+							"width": 250
+						},
+						{
+							"header": {
+								"text": "Fullname",
+								"name": "Header8"
+							},
+							"name": "Column8",
+							"footer": {
+								"name": "Footer8"
+							},
+							"dataSource": "This:C1470.entity.fullname",
+							"width": 200
+						},
+						{
+							"header": {
+								"name": "Header10",
+								"text": "Email"
+							},
+							"name": "Column10",
+							"footer": {
+								"name": "Footer10"
+							},
+							"dataSource": "This:C1470.entity.email",
+							"width": 200
+						},
+						{
+							"header": {
+								"name": "Header11",
+								"text": "Phone"
+							},
+							"name": "Column11",
+							"footer": {
+								"name": "Footer11"
+							},
+							"dataSource": "This:C1470.entity.phone",
+							"width": 150
+						},
+						{
+							"header": {
+								"name": "Header12",
+								"text": "Address"
+							},
+							"name": "Column12",
+							"footer": {
+								"name": "Footer12"
+							},
+							"dataSource": "This:C1470.entity.address.str",
+							"width": 327
+						}
+					]
+				},
+				"similarityLevel": {
+					"type": "ruler",
+					"left": 32,
+					"top": 578,
+					"width": 219,
+					"height": 11,
+					"max": 100,
+					"events": [
+						"onDataChange"
+					],
+					"dataSource": "Form:C1466.actions.searchingSimilarities.similarityLevel",
+					"dataSourceTypeHint": "number",
+					"step": 1,
+					"showGraduations": false,
+					"graduationStep": 0,
+					"labelsPlacement": "bottom",
+					"fontFamily": "Avenir Light",
+					"fontSize": 8,
+					"min": 70
+				},
+				"btnSearchSimilarities": {
+					"type": "button",
+					"text": "Search similarities",
+					"top": 596,
+					"left": 32,
+					"width": 219,
+					"height": 31,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text16": {
+					"type": "text",
+					"text": "This screen will help you find all similarities of the Customer table.\r\rFor each Customer, all similarities superior to the desired target similarity are searched and presented here.\r\rAdjust ruler to set a target similarity. The lower the target similarity is, the more you will match \"dissimilar\" customers.\r\rNote: No AI model is used here, only vector comparison.\r\rTry different embedding models and see how it impacts results here.\r\r",
+					"top": 108,
+					"left": 32,
+					"width": 219,
+					"height": 462,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"textAlign": "left"
+				},
+				"Text21": {
+					"type": "text",
+					"text": "Customers with similarities",
+					"top": 108,
+					"left": 283,
+					"width": 318,
+					"height": 22,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16
+				},
+				"Text1": {
+					"type": "text",
+					"text": "Similarities for selected customer",
+					"top": 394,
+					"left": 283,
+					"width": 323,
+					"height": 22,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16
+				},
+				"similaritiesSearchMessage": {
+					"type": "input",
+					"left": 32,
+					"top": 634,
+					"width": 219,
+					"height": 37,
+					"dataSource": "Form:C1466.actions.searchingSimilarities.progress.message",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "text",
+					"multiline": "yes"
+				},
+				"Text18": {
+					"type": "text",
+					"text": "Search for similarities in database",
+					"top": 42,
+					"left": 23,
+					"width": 314,
+					"height": 28,
+					"fontFamily": "Avenir Light",
+					"fontSize": 20
 				}
 			}
 		}
 	],
-	"geometryStamp": 215,
+	"geometryStamp": 255,
 	"editor": {
+		"groups": {
+			"Group": [
+				"Rectangle2",
+				"Text16"
+			],
+			"Group1": [
+				"Text3",
+				"openAIKitLink"
+			],
+			"Group2": [
+				"Text6",
+				"openAILink"
+			],
+			"Group3": [
+				"Text7",
+				"ollamaLink",
+				"Text8",
+				"ollamaModels"
+			]
+		},
 		"activeView": "View 1",
 		"defaultView": "View 1",
 		"views": {
 			"View 1": {}
 		}
 	},
-	"method": "",
-	"formClass": "formMenu",
+	"method": "method.4dm",
+	"formClass": "formSearchSimilarities",
 	"menuBar": "Barre #1"
 }

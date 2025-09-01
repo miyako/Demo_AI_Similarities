@@ -1,76 +1,105 @@
+Class extends formMenu
+
 property customersWithSimilarities : Collection
 property selectedCustomer : Object
 property similarCustomers : Collection
 property actions : Object
 
-Class constructor()
+Class constructor($menu : Collection)
+	
+	$menu:=$menu=Null ? [] : $menu
+	
+	Super($menu.unshift("Search similarities"))
+	
 	This.similarCustomers:=[]
 	This.actions:={\
-		searchingSimilarities: {running: 0; progress: {value: 0; message: ""}; similarityLevel: 90; timing: 0}\
+		searchingSimilarities: {progress: {value: 0; message: ""}; \
+		similarityLevel: 90}\
 		}
 	
+Function onPageChange() : cs.formSearchSimilarities
 	
-	//MARK: -
-	//MARK: Form & form objects event handlers
+	Super.onPageChange()
 	
-Function formEventHandler($formEventCode : Integer)
 	Case of 
-		: ($formEventCode=On Load)
-			OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
+		: (This.menu.currentValue="Search similarities")
 			OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
+			OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
 	End case 
 	
-Function btnSearchSimilaritiesEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Clicked)
-			Form.customersWithSimilarities:=[]
-			Form.similarCustomers:=[]
-			
-			This.actions.searchingSimilarities.running:=1
-			This.actions.searchingSimilarities.timing:=0
-			This.actions.searchingSimilarities.progress.message:="Searching similar customers"
-			
-			OBJECT SET VISIBLE(*; "similaritiesSearch@"; True)
-			CALL WORKER(String(Session.id)+"-searchingAllSimilarities"; Formula(cs.workerHelper.me.searchAllSimilarCustomers($1; $2)); Form; Current form window)
-	End case 
+	return This
 	
-Function listBoxCustomersEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Selection Change)
-			If (Form.selectedCustomer=Null)
-				Form.similarCustomers:=[]
-			Else 
-				Form.similarCustomers:=Form.selectedCustomer.similarities
-			End if 
-	End case 
+Function onDataChange() : cs.formSearchSimilarities
 	
-Function rulerSimilarityEventHandler($formEventCode : Integer)
+	Super.onDataChange()
+	
+	var $event : Object
+	$event:=FORM Event
+	
 	Case of 
-		: ($formEventCode=On Data Change)
+		: ($event.objectName="similarityLevel")
 			OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
 			OBJECT SET VISIBLE(*; "similaritiesSearchMessage"; False)
 	End case 
 	
+	return This
 	
+Function onSelectionChange() : cs.formSearchSimilarities
 	
-	//MARK: -
-	//MARK: Form actions callback functions
+	Super.onSelectionChange()
 	
-Function terminateSearchAllSimilarCustomers_($customersWithSimilarities : Collection; $timing : Integer)
-	var $customer; $similarCustomer : Object
+	var $event : Object
+	$event:=FORM Event
 	
-	For each ($customer; $customersWithSimilarities)
-		$customer.entity:=ds.customer.get($customer.customerID)
-		For each ($similarCustomer; $customer.similarities)
-			$similarCustomer.entity:=ds.customer.get($similarCustomer.customerID)
-		End for each 
-	End for each 
+	Case of 
+		: ($event.objectName="customersWithSimilarities")
+			
+			If (This.selectedCustomer=Null)
+				This.similarCustomers:=[]
+			Else 
+				This.similarCustomers:=This.selectedCustomer.similarities
+			End if 
+			
+	End case 
 	
-	OBJECT SET VISIBLE(*; "similaritiesSearchSpinner"; False)
-	Form.customersWithSimilarities:=$customersWithSimilarities
-	Form.actions.searchingSimilarities.timing:=$timing
-	Form.actions.searchingSimilarities.progress.message:=String($customersWithSimilarities.length)+" "+\
-		(($customersWithSimilarities.length<=1) ? "customer" : "customers")+" with similarities found in "+String($timing)+" ms"
+	return This
 	
-Function terminateSearchAllSimilarCustomers($customersWithSimilarities : Collection; $timing : Integer)
-	EXECUTE METHOD IN SUBFORM("Subform"; This.terminateSearchAllSimilarCustomers_; *; $customersWithSimilarities; $timing)
+Function onClicked() : cs.formSearchSimilarities
+	
+	Super.onClicked()
+	
+	var $event : Object
+	$event:=FORM Event
+	
+	Case of 
+		: ($event.objectName="btnSearchSimilarities")
+			
+			This.customersWithSimilarities:=[]
+			This.similarCustomers:=[]
+			
+			This.actions.searchingSimilarities.progress.message:=""
+			
+			OBJECT SET VISIBLE(*; "similaritiesSearch@"; True)
+			
+			This.searchAllSimilarCustomers()
+			
+	End case 
+	
+	return This
+	
+Function searchAllSimilarCustomers()
+	
+	var $customersWithSimilarities : Collection
+	$customersWithSimilarities:=ds.customer.customersWithSimilarities(This.actions.searchingSimilarities.similarityLevel/100)
+	
+	//var $customer; $similarCustomer : Object
+	//For each ($customer; $customersWithSimilarities)
+	//$customer.entity:=ds.customer.get($customer.customerID)
+	//For each ($similarCustomer; $customer.similarities)
+	//$similarCustomer.entity:=ds.customer.get($similarCustomer.customerID)
+	//End for each 
+	//End for each 
+	
+	This.customersWithSimilarities:=$customersWithSimilarities
+	This.actions.searchingSimilarities.progress.message:=String($customersWithSimilarities.length)+" "+\
+		(($customersWithSimilarities.length<=1) ? "customer" : "customers")+" with similarities found"
