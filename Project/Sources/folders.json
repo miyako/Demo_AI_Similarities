@@ -11,6 +11,14 @@
 	"(Default Forms)": {},
 	"(Default Project Methods)": {},
 	"(Default Tables)": {},
+	"HDI": {
+		"methods": [
+			"00_Start"
+		],
+		"forms": [
+			"HDI"
+		]
+	},
 	"ORDA": {
 		"tables": [
 			"customer",
