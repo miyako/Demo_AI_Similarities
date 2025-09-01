@@ -12,13 +12,13 @@ Class constructor()
 	This.providersGen:={values: []; index: 0}
 	This.modelsGen:={values: []; index: 0}
 	
-	$providers:=ds.providerSettings.providersAvailable("reasonning")
+	$providers:=ds.providerSettings.providersAvailable("reasoning")
 	If ($providers.length>0)
 		This.providersGen.values:=$providers.extract("name")
 		$provider:=$providers.first()
-		$models:=$provider.reasonningModels.models
+		$models:=$provider.reasoningModels.models
 		This.modelsGen.values:=$models.extract("model")
-		This.modelsGen.index:=This.modelsGen.values.findIndex(Formula($1.value=$provider.defaults.reasonning))
+		This.modelsGen.index:=This.modelsGen.values.findIndex(Formula($1.value=$provider.defaults.reasoning))
 	End if 
 	
 	This.newCustomer:=ds.customer.new()
@@ -46,7 +46,7 @@ Function formEventHandler($formEventCode : Integer)
 Function providersGenListEventHandler($formEventCode : Integer)
 	Case of 
 		: ($formEventCode=On Data Change)
-			This.modelsGen:=This.setModelList(This.providersGen; "reasonning")
+			This.modelsGen:=This.setModelList(This.providersGen; "reasoning")
 	End case 
 	
 Function btnGenerateCustomerEventHandler($formEventCode : Integer)
@@ -172,24 +172,24 @@ Function terminateSearchSimilarCustomers($similarCustomers : Collection; $timing
 	
 	
 	
-	//MARK: -
-	//MARK: Other functions
-	
 Function setModelList($providerList : Object; $kind : Text) : Object
+	
 	var $provider : cs.providerSettingsEntity
 	var $models : Collection
 	var $list : Object:={}
 	var $defaultModel : Text
 	
 	$provider:=ds.providerSettings.query("name = :1"; $providerList.currentValue).first()
+	
 	Case of 
-		: ($kind="reasonning")
-			$models:=$provider.reasonningModels.models
-			$defaultModel:=$provider.defaults.reasonning
+		: ($kind="reasoning")
+			$models:=$provider.reasoningModels.models
+			$defaultModel:=$provider.defaults.reasoning
 		: ($kind="embedding")
 			$models:=$provider.embeddingModels.models
 			$defaultModel:=$provider.defaults.embedding
 	End case 
+	
 	$list.values:=$models.extract("model")
 	$list.index:=$list.values.findIndex(Formula($1.value=$defaultModel))
 	

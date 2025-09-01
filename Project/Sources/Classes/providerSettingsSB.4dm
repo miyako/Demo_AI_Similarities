@@ -85,9 +85,9 @@ Function updateProviders()
 				$provider.defaults.embedding:=($defaultModel#Null) ? $defaultModel.model : "No embedding model detected"
 			End if 
 			
-			If ($provider.models.query("model = :1"; $provider.defaults.reasonning).length=0)
+			If ($provider.models.query("model = :1"; $provider.defaults.reasoning).length=0)
 				$defaultModel:=$provider.models.query("model # :1"; "@embed@").first()
-				$provider.defaults.reasonning:=($defaultModel#Null) ? $defaultModel.model : "No reasonning model detected"
+				$provider.defaults.reasoning:=($defaultModel#Null) ? $defaultModel.model : "No reasoning model detected"
 			End if 
 		End if 
 		

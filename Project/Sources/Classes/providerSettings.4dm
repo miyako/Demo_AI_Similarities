@@ -25,11 +25,16 @@ Function updateProviderSettings()
 	var $modelsToRemove : Collection
 	var $defaultModel : Object
 	
-	If (This.all().length=0)
+	If (This.getCount()=0)
 		This.loadDefaults()
 	End if 
 	
 	For each ($provider; $providers)
+		$keyFile:=File("/PACKAGE/"+$provider.name+".token")
+		If ($provider.key="" && $keyFile.exists)
+			//load api key from external file for cs.AIKit.OpenAI.new()
+			$provider.key:=$keyFile.getText()
+		End if 
 		$AIClient:=cs.AIKit.OpenAI.new($provider.key)
 		$AIClient.baseURL:=($provider.url#"") ? $provider.url : $AIClient.baseURL
 		$modelsList:=$AIClient.models.list()
@@ -51,9 +56,9 @@ Function updateProviderSettings()
 				$provider.defaults.embedding:=($defaultModel#Null) ? $defaultModel.model : "No embedding model detected"
 			End if 
 			
-			If ($provider.models.values.query("model = :1"; $provider.defaults.reasonning).length=0)
+			If ($provider.models.values.query("model = :1"; $provider.defaults.reasoning).length=0)
 				$defaultModel:=$provider.models.values.query("model # :1"; "@embed@").first()
-				$provider.defaults.reasonning:=($defaultModel#Null) ? $defaultModel.model : "No reasonning model detected"
+				$provider.defaults.reasoning:=($defaultModel#Null) ? $defaultModel.model : "No reasoning model detected"
 			End if 
 		End if 
 		$provider.save()
@@ -72,7 +77,7 @@ Function add() : cs.providerSettingsEntity
 	$newProvider.models:={values: []}
 	$newProvider.modelsToKeep:={values: []}
 	$newProvider.modelsToRemove:={values: []}
-	$newProvider.defaults:={embedding: ""; reasonning: ""}
+	$newProvider.defaults:={embedding: ""; reasoning: ""}
 	$newProvider.save()
 	
 	return $newProvider
@@ -81,14 +86,9 @@ Function providersAvailable($kind : Text) : cs.providerSettingsSelection
 	Case of 
 		: ($kind="embedding")
 			return This.query("hasEmbeddingModels = true")
-		: ($kind="reasonning")
-			return This.query("hasReasonningModels = true")
+		: ($kind="reasoning")
+			return This.query("hasreasoningModels = true")
 		Else 
 			return This.query("hasModels = true")
 	End case 
-	
-	
-	
-	
-	
 	

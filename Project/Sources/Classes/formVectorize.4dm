@@ -1,10 +1,17 @@
+Class extends formIntro
+
 property providersEmb : Object
 property modelsEmb : Object
 property providersGen : Object
 property modelsGen : Object
 property actions : Object
 
-Class constructor()
+Class constructor($menu : Collection)
+	
+	$menu:=$menu=Null ? [] : $menu
+	
+	Super($menu.unshift("Data Gen & Embeddings 🪄"))
+	
 	var $providers : cs.providerSettingsSelection
 	var $provider : cs.providerSettingsEntity
 	var $models : Collection
@@ -23,13 +30,13 @@ Class constructor()
 		This.modelsEmb.index:=This.modelsEmb.values.findIndex(Formula($1.value=$provider.defaults.embedding))
 	End if 
 	
-	$providers:=ds.providerSettings.providersAvailable("reasonning")
+	$providers:=ds.providerSettings.providersAvailable("reasoning")
 	If ($providers.length>0)
 		This.providersGen.values:=$providers.extract("name")
 		$provider:=$providers.first()
-		$models:=$provider.reasonningModels.models
+		$models:=$provider.reasoningModels.models
 		This.modelsGen.values:=$models.extract("model")
-		This.modelsGen.index:=This.modelsGen.values.findIndex(Formula($1.value=$provider.defaults.reasonning))
+		This.modelsGen.index:=This.modelsGen.values.findIndex(Formula($1.value=$provider.defaults.reasoning))
 	End if 
 	
 	This.actions:={\
@@ -44,40 +51,17 @@ Class constructor()
 		This.actions.embedding.status:="Missing"
 	End if 
 	
+Function onPageChange() : cs.formVectorize
 	
-	//MARK: -
-	//MARK: Form & form objects event handlers
+	Super.onPageChange()
 	
-Function formEventHandler($formEventCode : Integer)
 	Case of 
-		: ($formEventCode=On Load)
+		: (This.menu.currentValue="Data Gen & Embeddings 🪄")
 			OBJECT SET VISIBLE(*; "customerGen@"; False)
 			OBJECT SET VISIBLE(*; "embedding@"; False)
 	End case 
 	
-Function providersGenListEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Data Change)
-			This.modelsGen:=This.setModelList(This.providersGen; "reasonning")
-	End case 
-	
-Function providersEmbListEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Data Change)
-			This.modelsEmb:=This.setModelList(This.providersEmb; "embedding")
-	End case 
-	
-Function btnGenerateCustomersEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Clicked)
-			This.actions.generatingCustomers.running:=1
-			This.actions.generatingCustomers.progress:={value: 0; message: "Generating customers"}
-			
-			OBJECT SET VISIBLE(*; "customerGen@"; True)
-			OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
-			CALL WORKER(String(Session.id)+"-generatingCustomers"; Formula(cs.workerHelper.me.generateCustomers($1; $2)); This; Current form window)
-	End case 
-	
+	return This
 	
 Function gencust()
 	var $customerGenerator : cs.AI_DataGenerator
@@ -88,12 +72,10 @@ Function gencust()
 	$customerGenerator.populateAddresses(10; {window: $window; formula: Formula($formObject.progressGenerateCustomers($1))})
 	CALL FORM($window; Formula($formObject.terminateGenerateCustomers()))
 	
-	
-	
-	
 Function btnVectorizeEventHandler($formEventCode : Integer)
 	Case of 
 		: ($formEventCode=On Clicked)
+			
 			This.actions.embedding.running:=1
 			This.actions.embedding.status:="In progress"
 			This.actions.embedding.embeddingInfo:=ds.embeddingInfo.dummyInfo()
@@ -104,17 +86,58 @@ Function btnVectorizeEventHandler($formEventCode : Integer)
 			CALL WORKER(String(Session.id)+"-embedding"; Formula(cs.workerHelper.me.vectorizeCustomers($1; $2)); This; Current form window)
 	End case 
 	
-Function btnDropDataEventHandler($formEventCode : Integer)
+Function onClicked() : cs.formVectorize
+	
+	Super.onClicked()
+	
+	var $event : Object
+	$event:=FORM Event
+	
 	Case of 
-		: ($formEventCode=On Clicked)
+		: ($event.objectName="btnGenerateCustomers")
+			
+			This.actions.generatingCustomers.running:=1
+			This.actions.generatingCustomers.progress:={value: 0; message: "Generating customers"}
+			
+			OBJECT SET VISIBLE(*; "customerGen@"; True)
+			OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
+			
+			
+			
+			CALL WORKER(String(Session.id)+"-generatingCustomers"; Formula(cs.workerHelper.me.generateCustomers($1; $2)); This; Current form window)
+			
+			
+			
+			
+		: ($event.objectName="btnDropData")
+			
 			ds.customer.all().drop()
 			ds.embeddingInfo.all().drop()
 			This.actions.embedding:={running: 0; progress: {value: 0; message: ""}; status: "Missing"}
+			
 	End case 
 	
+	return This
 	
-	//MARK: -
-	//MARK: Form actions callback functions
+Function onDataChange() : cs.formVectorize
+	
+	Super.onDataChange()
+	
+	var $event : Object
+	$event:=FORM Event
+	
+	Case of 
+		: ($event.objectName="providersGenList")
+			
+			This.modelsGen:=This.setModelList(This.providersGen; "reasoning")
+			
+		: ($event.objectName="providersEmbList")
+			
+			This.modelsEmb:=This.setModelList(This.providersEmb; "embedding")
+			
+	End case 
+	
+	return This
 	
 Function terminateGenerateCustomers_()
 	OBJECT SET VISIBLE(*; "customerGen@"; False)
@@ -152,37 +175,5 @@ Function progressVectorizing_($progress : Object)
 	
 Function progressVectorizing($progress : Object)
 	EXECUTE METHOD IN SUBFORM("Subform"; This.progressVectorizing_; *; $progress)
-	
-	
-	//MARK: -
-	//MARK: Other functions
-	
-Function setModelList($providerList : Object; $kind : Text) : Object
-	var $provider : cs.providerSettingsEntity
-	var $models : Collection
-	var $list : Object:={}
-	var $defaultModel : Text
-	
-	$provider:=ds.providerSettings.query("name = :1"; $providerList.currentValue).first()
-	Case of 
-		: ($kind="reasonning")
-			$models:=$provider.reasonningModels.models
-			$defaultModel:=$provider.defaults.reasonning
-		: ($kind="embedding")
-			$models:=$provider.embeddingModels.models
-			$defaultModel:=$provider.defaults.embedding
-	End case 
-	$list.values:=$models.extract("model")
-	$list.index:=$list.values.findIndex(Formula($1.value=$defaultModel))
-	
-	return $list
-	
-	//MARK: -
-	//MARK: Computed properties
-	
-Function get embeddingDateTime() : Text
-	return String(This.actions.embedding.info.embeddingDate; "dd/MM/yyyy")+" "+String(Time(This.actions.embedding.info.embeddingTime); "HH:mm:ss")
-	
-	
 	
 	
