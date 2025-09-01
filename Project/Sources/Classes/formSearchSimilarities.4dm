@@ -13,9 +13,11 @@ Class constructor($menu : Collection)
 	
 	This.similarCustomers:=[]
 	This.actions:={\
-		searchingSimilarities: {progress: {value: 0; message: ""}; \
+		searchingSimilarities: {progress: {message: ""}; \
 		similarityLevel: 90}\
 		}
+	
+	//MARK: form events & callbacks
 	
 Function onPageChange() : cs.formSearchSimilarities
 	
@@ -86,6 +88,8 @@ Function onClicked() : cs.formSearchSimilarities
 	End case 
 	
 	return This
+	
+	//MARK: functions
 	
 Function searchAllSimilarCustomers()
 	
