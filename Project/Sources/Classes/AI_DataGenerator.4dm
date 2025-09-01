@@ -7,11 +7,12 @@ property customerSystemPrompt : Text
 property addressSystemPrompt : Text
 property singleCustomerSystemPrompt : Text
 
-
 Class extends AI_Agent
 
 Class constructor($providerName : Text; $model : Text)
+	
 	Super($providerName; $model)
+	
 	This.customerExpectedSchema:={firstname: "firstname"; lastname: "lastname"; email: "firstname.lastname@randomdomain.com"; phone: "random phone number"}
 	This.addressExpectedSchema:={streetNumber: "number"; streetName: "street name"; apartment: "number"; builing: "building"; poBox: "po box"; city: "city"; region: "region"; postalCode: "postal code"; country: "country"}
 	This.customerColExpectedSchema:=[This.customerExpectedSchema]
@@ -62,6 +63,7 @@ Function generateRandomCustomer() : cs.customerEntity
 	
 	
 Function generateData()
+	
 	This.generateCustomers(30; 10)
 	This.populateAddresses(10)
 	

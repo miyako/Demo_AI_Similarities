@@ -54,6 +54,16 @@
 					"height": 44,
 					"fill": "#b1c4dd",
 					"stroke": "transparent"
+				},
+				"Rectangle3": {
+					"type": "rectangle",
+					"top": 98,
+					"left": 23,
+					"width": 239,
+					"height": 582,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#FBFBFB"
 				}
 			}
 		},
@@ -125,7 +135,7 @@
 						{
 							"header": {
 								"name": "Header14",
-								"text": "Available\\reasonning models"
+								"text": "Available\\reasoning models"
 							},
 							"name": "Column14",
 							"dataSource": "This:C1470.reasonningModels.models.length",
@@ -350,13 +360,13 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13
 				},
-				"provider.reasonning": {
+				"provider.reasoning": {
 					"type": "input",
 					"left": 488,
 					"top": 607,
 					"width": 350,
 					"height": 18,
-					"dataSource": "Form:C1466.providersListBox.currentItem.defaults.reasonning",
+					"dataSource": "Form:C1466.providersListBox.currentItem.defaults.reasoning",
 					"enterable": true,
 					"focusable": false,
 					"borderStyle": "solid",
@@ -371,7 +381,7 @@
 				},
 				"Text12": {
 					"type": "text",
-					"text": "Default reasonning model:",
+					"text": "Default reasoning model:",
 					"top": 607,
 					"left": 284,
 					"width": 180,
@@ -407,7 +417,7 @@
 						"onSelectionChange"
 					],
 					"listboxType": "collection",
-					"dataSource": "Form:C1466.providersListBox.currentItem.reasonningModels.models",
+					"dataSource": "Form:C1466.providersListBox.currentItem.reasoningModels.models",
 					"currentItemSource": "",
 					"selectionMode": "single",
 					"singleClickEdit": true,
@@ -420,7 +430,7 @@
 					"columns": [
 						{
 							"header": {
-								"text": "Reasonning models",
+								"text": "Reasoning models",
 								"name": "Header16"
 							},
 							"name": "Column16",
@@ -509,19 +519,9 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13
 				},
-				"Rectangle3": {
-					"type": "rectangle",
-					"top": 98,
-					"left": 23,
-					"width": 239,
-					"height": 582,
-					"borderRadius": 10,
-					"stroke": "#EBEBEB",
-					"fill": "#FBFBFB"
-				},
 				"Text13": {
 					"type": "text",
-					"text": "This demo will teach you how to use 4D AI feature to detect duplicates in a database.\r\rIt comes with a pre-generated database.\r\rDemo features marked with 🪄, require at least one AI provider to be properly set.\r\rBefore using such features, review the table on the right and setup your AI providers so that at least 1 model gets listed as available.\r\rVocabulary:\rReasonning models are used by generative AI. They are used in this demo to generate customers in database or for address formatting.\r\rEmbedding models are used to compute embeddings.\r\rEmbedding is the process that transforms data (often text) into a vector. The resulting vector is also called an embedding.",
+					"text": "This demo will teach you how to use 4D AI feature to detect duplicates in a database.\r\rIt comes with a pre-generated database.\r\rDemo features marked with 🪄, require at least one AI provider to be properly set.\r\rBefore using such features, review the table on the right and setup your AI providers so that at least 1 model gets listed as available.\r\rVocabulary:\rReasoning models are used by generative AI. They are used in this demo to generate customers in database or for address formatting.\r\rEmbedding models are used to compute embeddings.\r\rEmbedding is the process that transforms data (often text) into a vector. The resulting vector is also called an embedding.",
 					"top": 108,
 					"left": 32,
 					"width": 219,
@@ -595,22 +595,595 @@
 				"provider.name",
 				"provider.url",
 				"provider.embedding",
-				"provider.reasonning",
+				"provider.reasoning",
 				"provider.keyHidden"
 			]
 		},
 		{
 			"objects": {
+				"providersEmbList": {
+					"type": "dropdown",
+					"left": 1183,
+					"top": 446,
+					"width": 231,
+					"height": 27,
+					"events": [
+						"onDataChange"
+					],
+					"dataSourceTypeHint": "object",
+					"dataSource": "Form:C1466.providersEmb",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"modelsEmbList": {
+					"type": "dropdown",
+					"left": 1183,
+					"top": 475,
+					"width": 231,
+					"height": 27,
+					"events": [
+						"onDataChange"
+					],
+					"dataSourceTypeHint": "object",
+					"dataSource": "Form:C1466.modelsEmb",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text15": {
+					"type": "text",
+					"text": "Provider:",
+					"top": 450,
+					"left": 891,
+					"width": 231,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text17": {
+					"type": "text",
+					"text": "Model:",
+					"top": 479,
+					"left": 891,
+					"width": 231,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"btnVectorize": {
+					"type": "button",
+					"text": "🪄 Compute Embeddings",
+					"top": 509,
+					"left": 1183,
+					"width": 231,
+					"height": 41,
+					"events": [
+						"onClick"
+					],
+					"method": "ObjectMethods/btnVectorize.4dm",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"btnGenerateCustomers": {
+					"type": "button",
+					"text": "🪄 Generate customers",
+					"top": 509,
+					"left": 572,
+					"width": 232,
+					"height": 41,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"providersGenList": {
+					"type": "dropdown",
+					"left": 572,
+					"top": 446,
+					"width": 232,
+					"height": 27,
+					"events": [
+						"onDataChange"
+					],
+					"dataSourceTypeHint": "object",
+					"dataSource": "Form:C1466.providersGen",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"modelsGenList": {
+					"type": "dropdown",
+					"left": 572,
+					"top": 476,
+					"width": 232,
+					"height": 27,
+					"events": [
+						"onDataChange"
+					],
+					"dataSourceTypeHint": "object",
+					"dataSource": "Form:C1466.modelsGen",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text19": {
+					"type": "text",
+					"text": "Provider:",
+					"top": 450,
+					"left": 284,
+					"width": 230,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text20": {
+					"type": "text",
+					"text": "Model:",
+					"top": 488,
+					"left": 283,
+					"width": 231,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"customerGenSpinner": {
+					"type": "spinner",
+					"left": 760,
+					"top": 518,
+					"width": 44,
+					"height": 31,
+					"dataSource": "Form:C1466.actions.generatingCustomers.running"
+				},
+				"customerGenProgressBar": {
+					"type": "progress",
+					"left": 582,
+					"top": 509,
+					"width": 210,
+					"height": 17,
+					"max": 100,
+					"dataSource": "Form:C1466.actions.generatingCustomers.progress.value"
+				},
+				"embeddingProgressBar": {
+					"type": "progress",
+					"left": 1193,
+					"top": 509,
+					"width": 209,
+					"height": 17,
+					"max": 100,
+					"dataSource": "Form:C1466.actions.embedding.progress.value"
+				},
+				"customerGenProgressMessage": {
+					"type": "input",
+					"left": 582,
+					"top": 523,
+					"width": 186,
+					"height": 19,
+					"dataSource": "Form:C1466.actions.generatingCustomers.progress.message",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer"
+				},
+				"embeddingProgressMessage": {
+					"type": "input",
+					"left": 1193,
+					"top": 524,
+					"width": 184,
+					"height": 19,
+					"dataSource": "Form:C1466.actions.embedding.progress.message",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer"
+				},
+				"Text22": {
+					"type": "text",
+					"text": "Customers",
+					"top": 108,
+					"left": 283,
+					"width": 560,
+					"height": 22,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16,
+					"textAlign": "left"
+				},
+				"Text23": {
+					"type": "text",
+					"text": "Embeddings",
+					"top": 108,
+					"left": 890,
+					"width": 523,
+					"height": 22,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16,
+					"textAlign": "left"
+				},
+				"Input3": {
+					"type": "input",
+					"left": 342,
+					"top": 524,
+					"width": 23,
+					"height": 19,
+					"dataSource": "Form:C1466.actions.generatingCustomers.quantity",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer",
+					"defaultValue": "30",
+					"min": 0,
+					"max": 999,
+					"multiline": "no",
+					"textAlign": "center"
+				},
+				"Text24": {
+					"type": "text",
+					"text": "Generate",
+					"top": 524,
+					"left": 283,
+					"width": 60,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Text25": {
+					"type": "text",
+					"text": "customers, by batches of",
+					"top": 524,
+					"left": 369,
+					"width": 148,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Input4": {
+					"type": "input",
+					"left": 519,
+					"top": 524,
+					"width": 20,
+					"height": 19,
+					"dataSource": "Form:C1466.actions.generatingCustomers.quantityBy",
+					"enterable": true,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dataSourceTypeHint": "integer",
+					"multiline": "no",
+					"defaultValue": "10",
+					"min": 1,
+					"max": 50,
+					"textAlign": "center"
+				},
+				"Text26": {
+					"type": "text",
+					"text": "Generate data & embeddings",
+					"top": 42,
+					"left": 23,
+					"width": 314,
+					"height": 28,
+					"fontFamily": "Avenir Light",
+					"fontSize": 20
+				},
+				"Text27": {
+					"type": "text",
+					"text": "Populate here the demo's database: generate customer, compute embeddings.\r\rUse AI to generate random customers. Newly created customer come without embedding.\r\rAfter generating customers, don't forget to generate embeddings below.\r\rResults obtained in this demo will vary depending on the embedding model used.",
+					"top": 107,
+					"left": 32,
+					"width": 219,
+					"height": 557,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
 				"Rectangle2": {
 					"type": "rectangle",
-					"top": 98,
-					"left": 23,
-					"width": 239,
-					"height": 582,
+					"top": 143,
+					"left": 282,
+					"width": 231,
+					"height": 85,
 					"borderRadius": 10,
 					"stroke": "#EBEBEB",
-					"fill": "#FBFBFB"
+					"fill": "#D0D4F6"
 				},
+				"Text28": {
+					"type": "text",
+					"text": "Customers in database",
+					"top": 153,
+					"left": 292,
+					"width": 170,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"fontWeight": "normal"
+				},
+				"Input2": {
+					"type": "input",
+					"left": 292,
+					"top": 182,
+					"width": 209,
+					"height": 42,
+					"dataSource": "ds:C1482.customer.all().length",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 30,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold"
+				},
+				"Rectangle1": {
+					"type": "rectangle",
+					"top": 143,
+					"left": 571,
+					"width": 232,
+					"height": 85,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#D0D4F6"
+				},
+				"Text29": {
+					"type": "text",
+					"text": "Missing embeddings",
+					"top": 153,
+					"left": 581,
+					"width": 171,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13
+				},
+				"Input8": {
+					"type": "input",
+					"left": 581,
+					"top": 182,
+					"width": 210,
+					"height": 42,
+					"dataSource": "ds:C1482.customer.all().query(\"vector = null\").length",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 30,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold"
+				},
+				"Rectangle4": {
+					"type": "rectangle",
+					"top": 143,
+					"left": 890,
+					"width": 231,
+					"height": 85,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#D0D4F6"
+				},
+				"Text30": {
+					"type": "text",
+					"text": "Embedding status",
+					"top": 153,
+					"left": 900,
+					"width": 170,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"fontWeight": "normal"
+				},
+				"Input6": {
+					"type": "input",
+					"left": 900,
+					"top": 182,
+					"width": 209,
+					"height": 42,
+					"dataSource": "Form:C1466.actions.embedding.status",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 30,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold",
+					"textAlign": "right"
+				},
+				"Rectangle5": {
+					"type": "rectangle",
+					"top": 143,
+					"left": 1182,
+					"width": 231,
+					"height": 85,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#D0D4F6"
+				},
+				"Text31": {
+					"type": "text",
+					"text": "Model used",
+					"top": 153,
+					"left": 1192,
+					"width": 170,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"fontWeight": "normal"
+				},
+				"Input9": {
+					"type": "input",
+					"left": 1192,
+					"top": 174,
+					"width": 209,
+					"height": 26,
+					"dataSource": "Form:C1466.actions.embedding.info.provider",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 18,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold",
+					"textAlign": "right"
+				},
+				"Input10": {
+					"type": "input",
+					"left": 1198,
+					"top": 295,
+					"width": 209,
+					"height": 21,
+					"dataSource": "Form:C1466.actions.embedding.info.model",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 14,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold",
+					"textAlign": "right"
+				},
+				"Rectangle6": {
+					"type": "rectangle",
+					"top": 248,
+					"left": 890,
+					"width": 231,
+					"height": 85,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#D0D4F6"
+				},
+				"Text32": {
+					"type": "text",
+					"text": "Embedding date / time",
+					"top": 258,
+					"left": 900,
+					"width": 170,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"fontWeight": "normal"
+				},
+				"Input1": {
+					"type": "input",
+					"left": 900,
+					"top": 300,
+					"width": 209,
+					"height": 26,
+					"dataSource": "Form:C1466.embeddingDateTime",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 18,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold",
+					"textAlign": "right"
+				},
+				"Rectangle7": {
+					"type": "rectangle",
+					"top": 246,
+					"left": 1182,
+					"width": 231,
+					"height": 85,
+					"borderRadius": 10,
+					"stroke": "#EBEBEB",
+					"fill": "#D0D4F6"
+				},
+				"Text33": {
+					"type": "text",
+					"text": "Embedding duration",
+					"top": 256,
+					"left": 1192,
+					"width": 170,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"fontWeight": "normal"
+				},
+				"Input7": {
+					"type": "input",
+					"left": 1192,
+					"top": 289,
+					"width": 209,
+					"height": 42,
+					"dataSource": "Form:C1466.actions.embedding.info.duration/1000",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 30,
+					"dataSourceTypeHint": "time",
+					"fill": "transparent",
+					"fontWeight": "bold",
+					"textAlign": "right",
+					"timeFormat": "mm:ss"
+				},
+				"embeddingSpinner": {
+					"type": "spinner",
+					"left": 1370,
+					"top": 517,
+					"width": 44,
+					"height": 31,
+					"dataSource": "Form:C1466.actions.embedding.running"
+				},
+				"Text34": {
+					"type": "text",
+					"text": "Generate customers with generative AI!",
+					"top": 398,
+					"left": 283,
+					"width": 284,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16
+				},
+				"Text35": {
+					"type": "text",
+					"text": "Compute embeddings for all records",
+					"top": 398,
+					"left": 891,
+					"width": 284,
+					"height": 18,
+					"fontFamily": "Avenir Light",
+					"fontSize": 16
+				},
+				"Input5": {
+					"type": "input",
+					"left": 1192,
+					"top": 202,
+					"width": 209,
+					"height": 26,
+					"dataSource": "Form:C1466.actions.embedding.info.model",
+					"enterable": false,
+					"focusable": false,
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 14,
+					"dataSourceTypeHint": "integer",
+					"fill": "transparent",
+					"fontWeight": "bold",
+					"textAlign": "right"
+				},
+				"btnDropData": {
+					"type": "button",
+					"text": "⚠️ Drop all data",
+					"top": 235,
+					"left": 282,
+					"width": 231,
+					"height": 41,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"focusable": false
+				}
+			}
+		},
+		{
+			"objects": {
 				"customersWithSimilarities": {
 					"type": "listbox",
 					"left": 283,
@@ -879,16 +1452,25 @@
 			}
 		}
 	],
-	"geometryStamp": 260,
+	"geometryStamp": 274,
 	"editor": {
 		"groups": {
 			"Group": [
-				"Rectangle2",
-				"Text16"
+				"Rectangle2"
 			],
 			"Group1": [
 				"Text3",
 				"openAIKitLink"
+			],
+			"Group10": [
+				"Rectangle4",
+				"Text30",
+				"Input6"
+			],
+			"Group11": [
+				"Rectangle6",
+				"Text32",
+				"Input1"
 			],
 			"Group2": [
 				"Text6",
@@ -899,6 +1481,50 @@
 				"ollamaLink",
 				"Text8",
 				"ollamaModels"
+			],
+			"Group4": [
+				"Rectangle2",
+				"Text28",
+				"Input2"
+			],
+			"Group5": [
+				"Rectangle1",
+				"Text29",
+				"Input8"
+			],
+			"Group6": [
+				"Input3",
+				"Text24",
+				"Text25",
+				"Input4",
+				"btnGenerateCustomers",
+				"providersGenList",
+				"modelsGenList",
+				"Text19",
+				"Text20",
+				"customerGenSpinner",
+				"customerGenProgressBar",
+				"customerGenProgressMessage"
+			],
+			"Group7": [
+				"Rectangle7",
+				"Text33",
+				"Input7"
+			],
+			"Group8": [
+				"Rectangle5",
+				"Text31",
+				"Input9"
+			],
+			"Group9": [
+				"providersEmbList",
+				"modelsEmbList",
+				"Text15",
+				"Text17",
+				"btnVectorize",
+				"embeddingProgressBar",
+				"embeddingProgressMessage",
+				"embeddingSpinner"
 			]
 		},
 		"activeView": "View 1",

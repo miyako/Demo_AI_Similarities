@@ -4,6 +4,7 @@ singleton Class constructor()
 * Generating customers
 **/
 Function generateCustomers($formObject : Object; $window : Integer)
+	
 	var $customerGenerator : cs.AI_DataGenerator
 	var $formulaCallback : 4D.Function
 	

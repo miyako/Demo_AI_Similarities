@@ -20,20 +20,50 @@ Class constructor($menu : Collection)
 	This.url_ollamaModels:="https://www.ollama.com/search"
 	This.url_AIKitProviders:="https://developer.4d.com/docs/aikit/compatible-openai"
 	
-Function allProviders() : cs.formIntro
+	//MARK: form events & callbacks
 	
-	This.providers:=ds.providerSettings.all()
-	If (This.providers.length#0)
-		LISTBOX SELECT ROW(*; "ProvidersListBox"; 1)
+Function onOpenAIModelListResult($modelsList : cs.AIKit.OpenAIModelListResult)
+	
+	If (Form#Null)
+		var $provider : cs.providerSettingsEntity
+		$provider:=ds.providerSettings.get($modelsList.request.headers.provider)
+		If ($provider#Null)
+			If ($modelsList.success)
+				var $f : 4D.Function
+				$f:=Formula(New object("model"; $1.value.id))
+				var $models : Collection
+				$models:=$modelsList.models.map($f)
+				var $modelsToKeep : Collection
+				$modelsToKeep:=($provider.modelsToKeep.values.length=0) ? ["@"] : $provider.modelsToKeep.values.copy()
+				var $modelsToRemove : Collection
+				$modelsToRemove:=$provider.modelsToRemove.values.copy()
+				$models:=$models.query("model in :1 and not (model in :2)"; $modelsToKeep; $modelsToRemove)
+				$models:=$models.orderBy("model asc")
+				$provider.models:={values: $models}
+			Else 
+				$provider.models:={values: []}
+			End if 
+			var $defaultModel : Object
+			If ($provider.models.values.length>0)
+				If ($provider.models.values.query("model = :1"; $provider.defaults.embedding).length=0)
+					$defaultModel:=$provider.models.values.query("model = :1"; "@embed@").first()
+					$provider.defaults.embedding:=($defaultModel#Null) ? $defaultModel.model : "No embedding model detected"
+				End if 
+				If ($provider.models.values.query("model = :1"; $provider.defaults.reasoning).length=0)
+					$defaultModel:=$provider.models.values.query("model # :1"; "@embed@").first()
+					$provider.defaults.reasoning:=($defaultModel#Null) ? $defaultModel.model : "No reasoning model detected"
+				End if 
+			End if 
+			$provider.save()
+			Form.allProviders()
+		End if 
 	End if 
-	
-	return This.onSelectionChange()
 	
 Function onLoad() : cs.formIntro
 	
 	Super.onLoad()
 	
-	return This.allProviders()
+	return This.updateProviderSettings()
 	
 Function onClicked() : cs.formIntro
 	
@@ -45,9 +75,11 @@ Function onClicked() : cs.formIntro
 	Case of 
 		: ($event.objectName="btnRefresh")
 			
-			ds.providerSettings.updateProviderSettings()
+			//ds.providerSettings.updateProviderSettings()
 			
-			This.allProviders()
+			//This.allProviders()
+			
+			This.updateProviderSettings()
 			
 		: ($event.objectName="openAILink")
 			
@@ -126,3 +158,27 @@ Function onPageChange() : cs.formIntro
 	End case 
 	
 	return This
+	
+	//MARK: functions
+	
+Function allProviders() : cs.formIntro
+	
+	This.providers:=ds.providerSettings.all()
+	If (This.providers.length#0)
+		LISTBOX SELECT ROW(*; "ProvidersListBox"; 1)
+	End if 
+	
+	return This.onSelectionChange()
+	
+Function updateProviderSettings() : cs.formIntro
+	
+	var $provider : cs.providerSettingsEntity
+	var $AIClient : cs.AIKit.OpenAI
+	For each ($provider; ds.providerSettings.all())
+		$AIClient:=cs.AIKit.OpenAI.new($provider.key)
+		$AIClient.baseURL:=($provider.url#"") ? $provider.url : $AIClient.baseURL
+		$AIClient.models.list({onResponse: This.onOpenAIModelListResult; extraHeaders: {provider: $provider.getKey(dk key as string)}})
+	End for each 
+	
+	return This
+	

@@ -1,4 +1,4 @@
-Class extends formIntro
+Class extends formVectorize
 
 property customersWithSimilarities : Collection
 property selectedCustomer : Object
