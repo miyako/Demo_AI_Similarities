@@ -11,6 +11,20 @@
 	"(Default Forms)": {},
 	"(Default Project Methods)": {},
 	"(Default Tables)": {},
+	"AI": {
+		"classes": [
+			"AI_AddressFormatter",
+			"AI_Agent",
+			"AI_Vectorizer"
+		]
+	},
+	"Demo": {
+		"classes": [
+			"form",
+			"formMenu",
+			"formSearchSimilarities"
+		]
+	},
 	"HDI": {
 		"methods": [
 			"00_Start"
@@ -24,6 +38,13 @@
 			"customer",
 			"embeddingInfo",
 			"providerSettings"
+		],
+		"classes": [
+			"customerEntity",
+			"DataStore",
+			"embeddingInfo",
+			"providerSettings",
+			"providerSettingsEntity"
 		]
 	},
 	"Singleton": {
