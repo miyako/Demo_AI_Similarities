@@ -1,2 +1,2 @@
-//%attributes = {}
-cs.settings.me.updateProviders()
+//%attributes = {"invisible":true}
+cs.settings.new().updateProviders()
