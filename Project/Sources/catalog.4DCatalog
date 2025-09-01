@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE base SYSTEM "http://www.4d.com/dtd/2007/base.dtd" >
-<base name="Demo_AI_Similarities" uuid="01987A4B43787208BA79DAB0439725D6" collation_locale="en">
+<base name="HDI_AI_Similarities" uuid="01987A4B43787208BA79DAB0439725D6" collation_locale="en">
 	<schema name="DEFAULT_SCHEMA"/>
 	<table name="customer" uuid="01987A4BCDA77FBA8E7A4BB18AF3D180" id="1">
 		<field name="ID" uuid="01987A4BCDA874E5B938E48EAEFE611F" type="10" unique="true" autogenerate="true" store_as_UUID="true" not_null="true" id="1"/>
@@ -14,10 +14,10 @@
 		<field name="phone" uuid="01987A4C9A0F751A873B609CDD4B4BA2" type="10" limiting_length="255" id="5">
 			<field_extra multi_line="false"/>
 		</field>
-		<field name="address" uuid="01987A4CD6777F5892D97B4E6EECF333" type="21" blob_switch_size="2147483647" id="6" class_id="cs.address">
+		<field name="address" uuid="01987A4CD6777F5892D97B4E6EECF333" type="21" blob_switch_size="2147483647" id="6">
 			<field_extra multi_line="false"/>
 		</field>
-		<field name="vector" uuid="0198898262D07F0A98B2008E77930C62" type="21" blob_switch_size="2147483647" id="7" class_id="4D.Vector"/>
+		<field name="vector" uuid="0198898262D07F0A98B2008E77930C62" type="21" blob_switch_size="2147483647" id="7"/>
 		<primary_key field_name="ID" field_uuid="01987A4BCDA874E5B938E48EAEFE611F"/>
 	</table>
 	<table name="providerSettings" uuid="0198C6A4193672FDB6704E91969E11C2" id="2">
