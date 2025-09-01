@@ -61,7 +61,8 @@ Function updateProviderSettings()
 	End for each 
 	
 	
-Function add()
+Function add() : cs.providerSettingsEntity
+	
 	var $newProvider : cs.providerSettingsEntity
 	
 	$newProvider:=ds.providerSettings.new()
@@ -73,6 +74,8 @@ Function add()
 	$newProvider.modelsToRemove:={values: []}
 	$newProvider.defaults:={embedding: ""; reasonning: ""}
 	$newProvider.save()
+	
+	return $newProvider
 	
 Function providersAvailable($kind : Text) : cs.providerSettingsSelection
 	Case of 

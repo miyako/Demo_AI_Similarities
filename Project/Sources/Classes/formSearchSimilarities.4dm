@@ -1,4 +1,4 @@
-Class extends formMenu
+Class extends formIntro
 
 property customersWithSimilarities : Collection
 property selectedCustomer : Object

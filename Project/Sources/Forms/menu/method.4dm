@@ -2,6 +2,10 @@ var $event : Object
 $event:=FORM Event
 
 Case of 
+	: ($event.code=On Load)
+		
+		Form.onLoad()
+		
 	: ($event.code=On Clicked)
 		
 		Form.onClicked()

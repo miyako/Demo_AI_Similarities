@@ -6,6 +6,10 @@ Class constructor($menu : Collection)
 	This.menu.values:=$menu
 	This.menu.index:=0
 	
+Function onLoad() : cs.form
+	
+	return This
+	
 Function onClicked() : cs.form
 	
 	var $event : Object

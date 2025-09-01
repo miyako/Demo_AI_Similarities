@@ -12,6 +12,7 @@
 	"rightMargin": 0,
 	"bottomMargin": 0,
 	"events": [
+		"onLoad",
 		"onClick",
 		"onDataChange",
 		"onSelectionChange",
@@ -188,7 +189,6 @@
 					"enterable": false,
 					"dragging": "none",
 					"dropping": "custom",
-					"method": "ObjectMethods/ollamaLink.4dm",
 					"events": [
 						"onClick"
 					],
@@ -221,7 +221,6 @@
 					"enterable": false,
 					"dragging": "none",
 					"dropping": "custom",
-					"method": "ObjectMethods/ollamaModels.4dm",
 					"events": [
 						"onClick"
 					],
@@ -243,7 +242,6 @@
 					"enterable": false,
 					"dragging": "none",
 					"dropping": "custom",
-					"method": "ObjectMethods/openAILink.4dm",
 					"events": [
 						"onClick"
 					],
@@ -262,10 +260,10 @@
 					],
 					"fontFamily": "Avenir Light",
 					"fontSize": 13,
-					"method": "ObjectMethods/btnRefresh.4dm",
-					"defaultButton": true
+					"defaultButton": true,
+					"focusable": false
 				},
-				"Input2": {
+				"provider.name": {
 					"type": "input",
 					"left": 488,
 					"top": 491,
@@ -279,7 +277,6 @@
 					"fontSize": 13,
 					"dataSourceTypeHint": "integer",
 					"multiline": "no",
-					"method": "ObjectMethods/genericInput.4dm",
 					"events": [
 						"onDataChange"
 					],
@@ -295,7 +292,7 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13
 				},
-				"Input1": {
+				"provider.url": {
 					"type": "input",
 					"left": 488,
 					"top": 519,
@@ -312,7 +309,6 @@
 					"events": [
 						"onDataChange"
 					],
-					"method": "ObjectMethods/Input1.4dm",
 					"placeholder": "Leave empty for OpenAI"
 				},
 				"Text10": {
@@ -325,7 +321,7 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13
 				},
-				"Input3": {
+				"provider.embedding": {
 					"type": "input",
 					"left": 488,
 					"top": 578,
@@ -342,7 +338,6 @@
 					"events": [
 						"onDataChange"
 					],
-					"method": "ObjectMethods/Input3.4dm",
 					"placeholder": "Will be selected by default for embeddings"
 				},
 				"Text11": {
@@ -355,7 +350,7 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13
 				},
-				"Input4": {
+				"provider.reasonning": {
 					"type": "input",
 					"left": 488,
 					"top": 607,
@@ -372,7 +367,6 @@
 					"events": [
 						"onDataChange"
 					],
-					"method": "ObjectMethods/Input4.4dm",
 					"placeholder": "Will be selected by default for generative AI"
 				},
 				"Text12": {
@@ -397,8 +391,8 @@
 					],
 					"fontFamily": "Avenir Light",
 					"fontSize": 13,
-					"method": "ObjectMethods/btnAdd.4dm",
-					"style": "regular"
+					"style": "regular",
+					"focusable": false
 				},
 				"List Box2": {
 					"type": "listbox",
@@ -440,7 +434,7 @@
 						}
 					]
 				},
-				"Input5": {
+				"provider.keyHidden": {
 					"type": "input",
 					"left": 488,
 					"top": 548,
@@ -457,7 +451,6 @@
 					"events": [
 						"onDataChange"
 					],
-					"method": "ObjectMethods/Input5.4dm",
 					"placeholder": "Leave empty for local Ollama"
 				},
 				"Text2": {
@@ -483,7 +476,7 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13,
 					"style": "regular",
-					"method": "ObjectMethods/btnDelete.4dm"
+					"focusable": false
 				},
 				"Text3": {
 					"type": "text",
@@ -510,7 +503,6 @@
 					"enterable": false,
 					"dragging": "none",
 					"dropping": "custom",
-					"method": "ObjectMethods/openAIKitLink.4dm",
 					"events": [
 						"onClick"
 					],
@@ -597,7 +589,15 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 20
 				}
-			}
+			},
+			"entryOrder": [
+				"ProvidersListBox",
+				"provider.name",
+				"provider.url",
+				"provider.embedding",
+				"provider.reasonning",
+				"provider.keyHidden"
+			]
 		},
 		{
 			"objects": {
@@ -879,7 +879,7 @@
 			}
 		}
 	],
-	"geometryStamp": 255,
+	"geometryStamp": 260,
 	"editor": {
 		"groups": {
 			"Group": [

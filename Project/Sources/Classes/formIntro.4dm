@@ -1,3 +1,5 @@
+Class extends form
+
 property providers : cs.providerSettingsSelection
 property providersListBox : Object
 property url_openAIModels : Text
@@ -5,7 +7,12 @@ property url_installOllama : Text
 property url_ollamaModels : Text
 property url_AIKitProviders : Text
 
-Class constructor
+Class constructor($menu : Collection)
+	
+	$menu:=$menu=Null ? [] : $menu
+	
+	Super($menu.unshift("Intro"))  //; "Data Gen & Embeddings 🪄"; "Create Customers 🪄"])
+	
 	This.providers:=ds.providerSettings.all()
 	This.providersListBox:={}
 	This.url_openAIModels:="https://platform.openai.com/docs/models"
@@ -13,39 +20,109 @@ Class constructor
 	This.url_ollamaModels:="https://www.ollama.com/search"
 	This.url_AIKitProviders:="https://developer.4d.com/docs/aikit/compatible-openai"
 	
-Function formEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Load)
-			LISTBOX SELECT ROW(*; "ProvidersListBox"; 1)
-	End case 
+Function allProviders() : cs.formIntro
 	
-Function btnAddProviderEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Clicked)
-			ds.providerSettings.add()
-			This.providers:=ds.providerSettings.all()
-			LISTBOX SELECT ROW(*; "ProvidersListBox"; Form.providers.length)
-	End case 
+	This.providers:=ds.providerSettings.all()
+	If (This.providers.length#0)
+		LISTBOX SELECT ROW(*; "ProvidersListBox"; 1)
+	End if 
 	
-Function btnDeleteProviderEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Clicked)
-			If (This.providersListBox.currentItem#Null)
-				This.providersListBox.currentItem.drop()
-				This.providers:=ds.providerSettings.all()
-				LISTBOX SELECT ROW(*; "ProvidersListBox"; 1)
-			End if 
-	End case 
+	return This.onSelectionChange()
 	
-Function btnRefreshProvidersEventHandler($formEventCode : Integer)
+Function onLoad() : cs.formIntro
+	
+	Super.onLoad()
+	
+	return This.allProviders()
+	
+Function onClicked() : cs.formIntro
+	
+	Super.onClicked()
+	
+	var $event : Object
+	$event:=FORM Event
+	
 	Case of 
-		: ($formEventCode=On Clicked)
+		: ($event.objectName="btnRefresh")
+			
 			ds.providerSettings.updateProviderSettings()
-			Form.providers:=ds.providerSettings.all()
+			
+			This.allProviders()
+			
+		: ($event.objectName="openAILink")
+			
+			OPEN URL(This.url_openAIModels)
+			
+		: ($event.objectName="ollamaLink")
+			
+			OPEN URL(This.url_installOllama)
+			
+		: ($event.objectName="openAIKitLink")
+			
+			OPEN URL(This.url_AIKitProviders)
+			
+		: ($event.objectName="ollamaModels")
+			
+			OPEN URL(This.url_ollamaModels)
+			
+		: ($event.objectName="btnDelete")
+			
+			This.providersListBox.currentItem.drop()
+			This.allProviders()
+			
+		: ($event.objectName="btnAdd")
+			
+			var $newProvider : cs.providerSettingsEntity
+			$newProvider:=ds.providerSettings.add()
+			This.providers:=This.providers.or($newProvider)
+			
+			var $idx : Integer
+			$idx:=$newProvider.indexOf(This.providers)
+			LISTBOX SELECT ROW(*; "ProvidersListBox"; $idx+1)
+			
 	End case 
 	
-Function genericInputEventHandler($formEventCode : Integer)
+	return This
+	
+Function onSelectionChange() : cs.formIntro
+	
+	Super.onSelectionChange()
+	
+	If (This.providersListBox.currentItem=Null)
+		OBJECT SET ENABLED(*; "btnDelete"; False)
+	Else 
+		OBJECT SET ENABLED(*; "btnDelete"; True)
+	End if 
+	
+	return This
+	
+Function onDataChange() : cs.formIntro
+	
+	Super.onDataChange()
+	
+	var $event : Object
+	$event:=FORM Event
+	
 	Case of 
-		: ($formEventCode=On Data Change)
-			This.providersListBox.currentItem.save()
+		: ($event.objectName="provider.@")
+			
+			If (This.providersListBox.currentItem#Null)
+				If (This.providersListBox.currentItem.touched())
+					This.providersListBox.currentItem.save()
+				End if 
+			End if 
+			
 	End case 
+	
+	return This
+	
+Function onPageChange() : cs.formIntro
+	
+	Super.onPageChange()
+	
+	Case of 
+		: (This.menu.currentValue="Intro")
+			
+	End case 
+	
+	return This
