@@ -5,7 +5,7 @@
 		"key": "",
 		"defaults": {
 			"embedding": "text-embedding-ada-002",
-			"reasonning": "gpt-4.1-2025-04-14"
+			"reasoning": "gpt-4.1-2025-04-14"
 		},
 		"modelsToKeep": {
 			"values": [
@@ -175,7 +175,7 @@
 		"key": "",
 		"defaults": {
 			"embedding": "nomic-embed-text:latest",
-			"reasonning": "mistral:latest"
+			"reasoning": "mistral:latest"
 		},
 		"modelsToKeep": {
 			"values": []
