@@ -52,16 +52,25 @@ Function updateProviders()
 	$jsonText:=File(This.keysFilePath).getText()
 	$jsonContent:=JSON Parse($jsonText; Is collection)
 	
+	var $keyFile : 4D.File
 	For each ($provider; $jsonContent)
+		$keyFile:=File("/PACKAGE/"+$provider.name+".token")
+		If ($provider.key="" && $keyFile.exists)
+			//load api key from external file for cs.AIKit.OpenAI.new()
+			$provider.key:=$keyFile.getText()
+		End if 
+		
 		$AIClient:=cs.AIKit.OpenAI.new($provider.key)
+		//do not store api key in AIProviders.json
+		$provider.key:=""
 		$AIClient.baseURL:=($provider.url#"") ? $provider.url : $AIClient.baseURL
 		$modelsList:=$AIClient.models.list()
 		If ($modelsList.success)
 			$f:=Formula(New object("model"; $1.value.id))
 			$models:=$modelsList.models.map($f)
 			
-			$modelsToKeep:=($provider.modelsToKeep.length=0) ? ["@"] : $provider.modelsToKeep.copy()
-			$modelsToRemove:=$provider.modelsToRemove.copy()
+			$modelsToKeep:=($provider.modelsToKeep.values.length=0) ? ["@"] : $provider.modelsToKeep.values.copy()
+			$modelsToRemove:=$provider.modelsToRemove.values.copy()
 			$models:=$models.query("model in :1 and not (model in :2)"; $modelsToKeep; $modelsToRemove)
 			
 			$models:=$models.orderBy("model asc")
