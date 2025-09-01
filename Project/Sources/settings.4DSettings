@@ -1,7 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?><preferences stamp="2">
+<?xml version="1.0" encoding="UTF-8"?><preferences stamp="3">
 	<com.4d>
 		<interface>
 			<user splash_screen="false"/>
 		</interface>
+		<general startup_environnement="1"/>
+		<compiler>
+			<options target="all"/>
+		</compiler>
+		<server>
+			<network>
+				<options use_legacy_network_layer="false" use_quic_network_layer="true"/>
+			</network>
+		</server>
 	</com.4d>
 </preferences>
