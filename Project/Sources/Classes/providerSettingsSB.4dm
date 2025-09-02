@@ -1,6 +1,7 @@
 property keysFilePath : Text
 
 singleton Class constructor()
+	
 	This.keysFilePath:="/RESOURCES/AIProviders.json"
 	
 Function openProviderFile($path : Text) : Collection
@@ -16,28 +17,36 @@ Function openProviderFile($path : Text) : Collection
 		return []
 	End if 
 	
-	return JSON Parse($file.getText(); Is collection)
+	var $collection : Collection
+	$collection:=Try(JSON Parse($file.getText(); Is collection))
+	If ($collection=Null)
+		return []
+	End if 
+	
+	return $collection
 	
 Function writeProviderFile($jsonContent : Collection)
-	var $file : 4D.File
 	
+	var $file : 4D.File
 	$file:=File(This.keysFilePath)
 	$file.setText(JSON Stringify($jsonContent; *))
 	
 Function provider($provider : Text) : Object
-	var $key : Object
+	
 	var $providers : Collection
-	
-	$providers:=This.openProviderFile()
-	
+	$providers:=This.openProviderFile(This.keysFilePath)
+	var $key : Object
 	$key:=$providers.query("name = :1"; $provider).first()
+	
 	If ($key=Null)
 		throw(999; "Provider "+$provider+" not defined in "+This.keysFilePath)
 		return {}
 	End if 
+	
 	return $key
 	
 Function updateProviders()
+	
 	var $jsonText : Text
 	var $jsonContent : Collection
 	var $provider : Object

@@ -1,19 +1,6 @@
 singleton Class constructor()
 	
 /**
-* Generating customers
-**/
-Function generateCustomers($formObject : Object; $window : Integer)
-	
-	var $customerGenerator : cs.AI_DataGenerator
-	var $formulaCallback : 4D.Function
-	
-	$customerGenerator:=cs.AI_DataGenerator.new($formObject.providersGen.currentValue; $formObject.modelsGen.currentValue)
-	$customerGenerator.generateCustomers($formObject.actions.generatingCustomers.quantity; $formObject.actions.generatingCustomers.quantityBy; {window: $window; formula: Formula($formObject.progressGenerateCustomers($1))})
-	$customerGenerator.populateAddresses(10; {window: $window; formula: Formula($formObject.progressGenerateCustomers($1))})
-	CALL FORM($window; Formula($formObject.terminateGenerateCustomers()))
-	
-/**
 * Vectorize
 **/
 Function vectorizeCustomers($formObject : Object; $window : Integer)

@@ -61,13 +61,7 @@ Function generateRandomCustomer() : cs.customerEntity
 	$customerObject:=This.generateRandomCustomerObject()
 	return ds.customer.newCustomerFromObject($customerObject)
 	
-	
-Function generateData()
-	
-	This.generateCustomers(30; 10)
-	This.populateAddresses(10)
-	
-Function populateAddresses($quantityBy : Integer; $callback : Object)
+Function populateAddresses($quantityBy : Integer; $parameters : Object)
 	var $addressGenBot : cs.AIKit.OpenAIChatHelper
 	var $customers : cs.customerSelection
 	var $customer : cs.customerEntity
@@ -113,45 +107,6 @@ Function populateAddresses($quantityBy : Integer; $callback : Object)
 			End if 
 		End if 
 	End for each 
-	
-Function generateCustomers($quantity : Integer; $quantityBy : Integer; $callback : Object)
-	var $customerGenBot : cs.AIKit.OpenAIChatHelper
-	var $alreadyThere : Integer
-	var $generated : Integer:=0
-	var $toGenerate : Integer
-	var $prompt : Text
-	var $AIResponse : Object
-	var $result : Object
-	var $customers : Collection
-	var $failedAttempts : Integer:=0
-	var $maxFailedAttempts : Integer:=10
-	var $progress : Object
-	
-	$progress:={}
-	$customerGenBot:=This.AIClient.chat.create(This.customerSystemPrompt; {model: This.model})
-	$alreadyThere:=ds.customer.all().length
-	
-	While (($generated<$quantity) && ($failedAttempts<=$maxFailedAttempts))
-		$toGenerate:=($quantityBy<($quantity-$generated)) ? $quantityBy : ($quantity-$generated)
-		$prompt:="generate "+String($toGenerate)+" customers"
-		$AIResponse:=$customerGenBot.prompt($prompt)
-		$result:=This.getAIStructuredResponse($AIResponse; Is collection)
-		If ($result.success)
-			ds.customer.fromCollection($result.response)
-			$generated:=ds.customer.all().length-$alreadyThere
-			
-			If ($callback#Null)
-				$progress.value:=Int($generated/$quantity*100)
-				$progress.message:="Generating customers "+String($generated)+"/"+String($quantity)
-				CALL FORM($callback.window; $callback.formula; $progress)
-			End if 
-		Else 
-			$failedAttempts+=1
-		End if 
-	End while 
-	
-	
-	
 	
 	
 	

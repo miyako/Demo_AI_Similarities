@@ -1,6 +1,7 @@
 {
 	"AI": {
 		"classes": [
+			"AI",
 			"AI_AddressFormatter",
 			"AI_Agent",
 			"AI_DataGenerator",
@@ -15,7 +16,8 @@
 			"address",
 			"form",
 			"formIntro",
-			"formSearchSimilarities"
+			"formSearchSimilarities",
+			"formVectorize"
 		]
 	},
 	"HDI": {

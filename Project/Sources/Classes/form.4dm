@@ -1,6 +1,11 @@
+Class extends AI
+
 property menu : Object
+property actions : Object
 
 Class constructor($menu : Collection)
+	
+	Super()
 	
 	This.menu:={}
 	This.menu.values:=$menu

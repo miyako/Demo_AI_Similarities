@@ -12,10 +12,6 @@ Class constructor($menu : Collection)
 	Super($menu.unshift("Search similarities"))
 	
 	This.similarCustomers:=[]
-	This.actions:={\
-		searchingSimilarities: {progress: {message: ""}; \
-		similarityLevel: 90}\
-		}
 	
 	//MARK: form events & callbacks
 	
@@ -25,6 +21,10 @@ Function onPageChange() : cs.formSearchSimilarities
 	
 	Case of 
 		: (This.menu.currentValue="Search similarities")
+			This.actions:={\
+				searchingSimilarities: {progress: {message: ""}; \
+				similarityLevel: 90}\
+				}
 			OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
 			OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
 	End case 
