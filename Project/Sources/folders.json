@@ -12,9 +12,13 @@
 		"methods": [
 			"menu"
 		],
+		"forms": [
+			"menu"
+		],
 		"classes": [
 			"address",
 			"form",
+			"formCreateCustomer",
 			"formIntro",
 			"formSearchSimilarities",
 			"formVectorize"
