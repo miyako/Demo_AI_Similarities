@@ -36,17 +36,6 @@
 		},
 		{
 			"objects": {
-				"Rectangle": {
-					"type": "rectangle",
-					"top": 0,
-					"left": 0,
-					"width": 1450,
-					"height": 660,
-					"right": 1450,
-					"bottom": 660,
-					"strokeWidth": 0,
-					"stroke": "transparent"
-				},
 				"Rectangle4": {
 					"type": "rectangle",
 					"top": 324,
@@ -831,15 +820,6 @@
 					"fontSize": 13,
 					"fontWeight": "bold"
 				},
-				"Rectangle8": {
-					"type": "rectangle",
-					"top": 0,
-					"left": 0,
-					"width": 1450,
-					"height": 44,
-					"fill": "#b1c4dd",
-					"stroke": "transparent"
-				},
 				"Text18": {
 					"type": "text",
 					"text": "Search existing similar customers when creating a new one",
@@ -877,7 +857,7 @@
 			]
 		}
 	],
-	"geometryStamp": 1480,
+	"geometryStamp": 1482,
 	"editor": {
 		"groups": {
 			"Group": [

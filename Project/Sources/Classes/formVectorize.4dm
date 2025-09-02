@@ -11,8 +11,8 @@ property maxFailedAttempts : Integer
 
 property dataGenerator : cs.AI_DataGenerator
 property vectorizer : cs.AI_Vectorizer
-property customerGenerator : cs.AIKit.OpenAIcustomerGenerator
-property addressGenerator : cs.AIKit.OpenAIcustomerGenerator
+property customerGenerator : cs.AIKit.OpenAIChatHelper
+property addressGenerator : cs.AIKit.OpenAIChatHelper
 
 property customersToVectorize : cs.customerSelection
 property vectorizeStartTime : Integer
@@ -107,7 +107,7 @@ Function onLoad() : cs.formVectorize
 	OBJECT SET VISIBLE(*; "customerGen@"; False)
 	OBJECT SET VISIBLE(*; "embedding@"; False)
 	
-	return This.refreshProviderSettings()
+	return This
 	
 Function onPageChange() : cs.formVectorize
 	
@@ -141,8 +141,9 @@ Function onClicked() : cs.formVectorize
 			This.actions.embedding.info.provider:=This.providersGen.currentValue
 			This.actions.embedding.progress:={value: 0; message: "Generating embeddings"}
 			
-			This.vectorizeStartTime:=Milliseconds
+			This.customersToVectorize:=ds.customer.query("vector == null")
 			This.vectorizeCount:=This.customersToVectorize.length
+			This.vectorizeStartTime:=Milliseconds
 			
 			This.vectorizeCustomers()
 			
@@ -184,29 +185,17 @@ Function onDataChange() : cs.formVectorize
 	$event:=FORM Event
 	
 	Case of 
-		: ($event.objectName="providersGenList")
+		: ($event.objectName="providersGenList@")
 			
 			This.modelsGen:=This.setModelList(This.providersGen; "reasoning")
 			
-		: ($event.objectName="providersEmbList")
+		: ($event.objectName="providersEmbList@")
 			
 			This.modelsEmb:=This.setModelList(This.providersEmb; "embedding")
 			
 	End case 
 	
 	return This
-	
-Function get embeddingDateTime() : Text
-	
-	If (This.actions.embedding.info.embeddingDate=Null)
-		return 
-	End if 
-	
-	If (This.actions.embedding.info.embeddingTime=Null)
-		return 
-	End if 
-	
-	return String(This.actions.embedding.info.embeddingDate; "dd/MM/yyyy")+" "+String(Time(This.actions.embedding.info.embeddingTime); "HH:mm:ss")
 	
 	//MARK: functions
 	
@@ -295,15 +284,14 @@ Function generateCustomers() : cs.formVectorize
 	
 Function refreshStatus() : cs.formVectorize
 	
-	This.customersToVectorize:=ds.customer.query("vector == null")
-	OBJECT SET ENABLED(*; "btnVectorize"; This.customersToVectorize.length#0)
-	
 	If (ds.embeddingInfo.embeddingStatus())
 		This.actions.embedding.status:="Done"
 		This.actions.embedding.info:=ds.embeddingInfo.info()
 	Else 
 		This.actions.embedding.status:="Missing"
 	End if 
+	
+	OBJECT SET ENABLED(*; "btnVectorize"; ds.embeddingInfo.missingCount()#0)
 	
 	return This
 	

@@ -38,25 +38,3 @@ Class constructor($providerName : Text; $model : Text)
 		"avoid generic email domains like example.com, prefer realistic ones. "+\
 		"Note that not all address attributes are mandatory."
 	
-Function generateRandomCustomerObject() : Object
-	var $customerGenBot : cs.AIKit.OpenAIChatHelper
-	var $addressGenBot : cs.AIKit.OpenAIChatHelper
-	var $prompt : Text
-	var $AIResponse : Object
-	var $result : Object
-	
-	$customerGenBot:=This.AIClient.chat.create(This.singleCustomerSystemPrompt; {model: This.model})
-	$prompt:="generate 1 customer"
-	$AIResponse:=$customerGenBot.prompt($prompt)
-	$result:=This.getAIStructuredResponse($AIResponse; Is object)
-	If ($result.success)
-		return $result.response
-	Else 
-		return {}
-	End if 
-	
-Function generateRandomCustomer() : cs.customerEntity
-	var $customerObject : Object
-	
-	$customerObject:=This.generateRandomCustomerObject()
-	return ds.customer.newCustomerFromObject($customerObject)

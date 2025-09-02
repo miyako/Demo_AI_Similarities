@@ -22,4 +22,8 @@ Case of
 		
 		Form.onDataChange()
 		
+	: ($event.code=On After Edit)
+		
+		Form.onAfterEdit()
+		
 End case 

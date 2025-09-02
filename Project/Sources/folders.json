@@ -35,9 +35,11 @@
 			"providerSettings"
 		],
 		"classes": [
+			"customer",
 			"customerEntity",
 			"DataStore",
 			"embeddingInfo",
+			"embeddingInfoEntity",
 			"providerSettings",
 			"providerSettingsEntity"
 		]

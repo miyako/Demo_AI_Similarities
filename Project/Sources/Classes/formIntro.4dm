@@ -11,9 +11,9 @@ Class constructor($menu : Collection)
 	
 	$menu:=$menu=Null ? [] : $menu
 	
-	Super($menu.unshift("Intro"))  // "Create Customers 🪄"])
+	Super($menu.unshift("Intro"))
 	
-	This.providers:=ds.providerSettings.all()
+	This.providers:=ds.providerSettings.newSelection()
 	This.providersListBox:={}
 	This.url_openAIModels:="https://platform.openai.com/docs/models"
 	This.url_installOllama:="https://www.ollama.com/download"

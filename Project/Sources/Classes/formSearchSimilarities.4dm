@@ -1,4 +1,4 @@
-Class extends formVectorize
+Class extends formCreateCustomer
 
 property customersWithSimilarities : Collection
 property selectedCustomer : Object
@@ -37,17 +37,25 @@ Function onPageChange() : cs.formSearchSimilarities
 	
 	return This
 	
-Function onDataChange() : cs.formSearchSimilarities
+Function onClicked() : cs.formCreateCustomer
 	
-	Super.onDataChange()
+	Super.onClicked()
 	
 	var $event : Object
 	$event:=FORM Event
 	
 	Case of 
-		: ($event.objectName="similarityLevel")
-			OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
-			OBJECT SET VISIBLE(*; "similaritiesSearchMessage"; False)
+		: ($event.objectName="btnSearchSimilarCustomersAll")
+			
+			This.customersWithSimilarities:=[]
+			This.similarCustomers:=[]
+			
+			This.actions.searchingSimilarities.progress.message:=""
+			
+			OBJECT SET VISIBLE(*; "similaritiesSearch@"; True)
+			
+			This.searchAllSimilarCustomers()
+			
 	End case 
 	
 	return This
@@ -72,54 +80,15 @@ Function onSelectionChange() : cs.formSearchSimilarities
 	
 	return This
 	
-Function onClicked() : cs.formSearchSimilarities
-	
-	Super.onClicked()
-	
-	var $event : Object
-	$event:=FORM Event
-	
-	Case of 
-		: ($event.objectName="btnSearchSimilarities")
-			
-			This.customersWithSimilarities:=[]
-			This.similarCustomers:=[]
-			
-			This.actions.searchingSimilarities.progress.message:=""
-			
-			OBJECT SET VISIBLE(*; "similaritiesSearch@"; True)
-			
-			This.searchAllSimilarCustomers()
-			
-	End case 
-	
-	return This
-	
 	//MARK: functions
-	
-Function refreshStatus() : cs.formSearchSimilarities
-	
-	Super.refreshStatus()
-	
-	OBJECT SET ENABLED(*; "btnSearchSimilarities"; Bool(ds.embeddingInfo.embeddingStatus()))
-	OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
-	OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
-	
-	return This
 	
 Function searchAllSimilarCustomers()
 	
 	var $customersWithSimilarities : Collection
 	$customersWithSimilarities:=ds.customer.customersWithSimilarities(This.actions.searchingSimilarities.similarityLevel/100)
 	
-	//var $customer; $similarCustomer : Object
-	//For each ($customer; $customersWithSimilarities)
-	//$customer.entity:=ds.customer.get($customer.customerID)
-	//For each ($similarCustomer; $customer.similarities)
-	//$similarCustomer.entity:=ds.customer.get($similarCustomer.customerID)
-	//End for each 
-	//End for each 
-	
 	This.customersWithSimilarities:=$customersWithSimilarities
 	This.actions.searchingSimilarities.progress.message:=String($customersWithSimilarities.length)+" "+\
 		(($customersWithSimilarities.length<=1) ? "customer" : "customers")+" with similarities found"
+	
+	

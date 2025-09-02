@@ -1,22 +1,5 @@
 singleton Class constructor()
 	
-/**
-* Generate a random customer
-**/
-Function generateCustomer($formObject : Object; $window : Integer)
-	var $customerGenerator : cs.AI_DataGenerator
-	var $customerObject : Object
-	var $startMillisecond; $timing : Integer
-	
-	$customerGenerator:=cs.AI_DataGenerator.new($formObject.providersGen.currentValue; $formObject.modelsGen.currentValue)
-	$startMillisecond:=Milliseconds
-	$customerObject:=$customerGenerator.generateRandomCustomerObject()
-	$timing:=Milliseconds-$startMillisecond
-	CALL FORM($window; Formula($formObject.terminateGenerateCustomer($customerObject; $timing)))
-	
-/**
-* Format an address
-**/
 Function formatAddress($formObject : Object; $window : Integer)
 	var $addressFormatter : cs.AI_AddressFormatter
 	var $address : cs.address
@@ -29,18 +12,3 @@ Function formatAddress($formObject : Object; $window : Integer)
 	CALL FORM($window; Formula($formObject.terminateAddressFormatting($address; $timing)))
 	
 	
-/**
-* Search similar customers for a customer (as object)
-**/
-	
-Function searchSimilarCustomers($formObject : Object; $customerObject : Object; $window : Integer)
-	var $startMillisecond; $timing : Integer
-	var $customer : cs.customerEntity
-	var $similarCustomers : Collection
-	
-	$customer:=ds.customer.newCustomerFromObject($customerObject)
-	$startMillisecond:=Milliseconds
-	$similarCustomers:=$customer.searchSimilarCustomers($formObject.actions.searchingSimilarities.similarityLevel/100)
-	$timing:=Milliseconds-$startMillisecond
-	
-	CALL FORM($window; Formula($formObject.terminateSearchSimilarCustomers($similarCustomers; $timing)))

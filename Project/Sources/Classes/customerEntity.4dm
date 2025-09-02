@@ -48,29 +48,3 @@ Function stringify() : Text
 	
 	return $stringified
 	
-Function searchSimilarCustomers($targetSimilarity : Real) : Collection
-	var $embeddingInfo : cs.embeddingInfoEntity
-	var $similarCustomersCol : Collection:=[]
-	var $customer : cs.customerEntity
-	var $vectorizer : cs.AI_Vectorizer
-	var $vector : 4D.Vector
-	var $similarity : Real
-	
-	If (ds.embeddingInfo.embeddingStatus()=False)
-		throw(999; "Cannot find similarities, no embedding info found. Please generate embeddings")
-		return []
-	End if 
-	
-	$embeddingInfo:=ds.embeddingInfo.info()
-	$vectorizer:=cs.AI_Vectorizer.new($embeddingInfo.provider; $embeddingInfo.model)
-	$vector:=$vectorizer.vectorize(This.stringify())
-	
-	For each ($customer; ds.customer.all().minus(This))
-		$similarity:=$vector.cosineSimilarity($customer.vector)
-		If ($similarity>=$targetSimilarity)
-			$similarCustomersCol.push({entity: $customer; customerID: $customer.ID; similarity: $similarity})
-		End if 
-	End for each 
-	$similarCustomersCol:=$similarCustomersCol.orderBy("similarity desc")
-	return $similarCustomersCol
-	

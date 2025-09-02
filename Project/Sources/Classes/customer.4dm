@@ -35,7 +35,7 @@ Function customersWithSimilarities($targetSimilarity : Real) : Collection
 		return []
 	End if 
 	
-	$customersX:=ds.customer.all().orderBy("ID")
+	$customersX:=ds.customer.query("vector != null").orderBy("ID")
 	
 	For each ($customerX; $customersX)
 		$customersY:=$customersX.slice($customerX.indexOf()+1)

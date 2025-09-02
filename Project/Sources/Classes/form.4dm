@@ -41,6 +41,10 @@ Function onSelectionChange() : cs.form
 	
 	return This
 	
+Function onAfterEdit() : cs.form
+	
+	return This
+	
 	//MARK: functions
 	
 Function setModelList($providerList : Object; $kind : Text) : Object
