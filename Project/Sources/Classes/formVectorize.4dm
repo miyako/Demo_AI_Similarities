@@ -10,8 +10,13 @@ property failedAttempts : Integer
 property maxFailedAttempts : Integer
 
 property dataGenerator : cs.AI_DataGenerator
+property vectorizer : cs.AI_Vectorizer
 property customerGenerator : cs.AIKit.OpenAIcustomerGenerator
 property addressGenerator : cs.AIKit.OpenAIcustomerGenerator
+
+property customersToVectorize : cs.customerSelection
+property vectorizeStartTime : Integer
+property vectorizeCount : Integer
 
 Class constructor($menu : Collection)
 	
@@ -78,20 +83,6 @@ Function onPageChange() : cs.formVectorize
 	
 	return This
 	
-Function btnVectorizeEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Clicked)
-			
-			This.actions.embedding.running:=1
-			This.actions.embedding.status:="In progress"
-			This.actions.embedding.embeddingInfo:=ds.embeddingInfo.dummyInfo()
-			This.actions.embedding.progress:={value: 0; message: "Generating embeddings"}
-			
-			OBJECT SET VISIBLE(*; "embedding@"; True)
-			OBJECT SET VISIBLE(*; "btnVectorize"; False)
-			CALL WORKER(String(Session.id)+"-embedding"; Formula(cs.workerHelper.me.vectorizeCustomers($1; $2)); This; Current form window)
-	End case 
-	
 Function onClicked() : cs.formVectorize
 	
 	Super.onClicked()
@@ -100,6 +91,28 @@ Function onClicked() : cs.formVectorize
 	$event:=FORM Event
 	
 	Case of 
+		: ($event.objectName="btnVectorize")
+			
+			This.vectorizer:=cs.AI_Vectorizer.new(This.providersEmb.currentValue; This.modelsEmb.currentValue)
+			
+			This.actions.embedding.running:=1
+			This.actions.embedding.status:="In progress"
+			This.actions.embedding.info:=ds.embeddingInfo.dummyInfo()
+			This.actions.embedding.model:=This.modelsGen.currentValue
+			This.actions.embedding.provider:=This.providersGen.currentValue
+			This.actions.embedding.progress:={value: 0; message: "Generating embeddings"}
+			
+			If (False)
+				This.customersToVectorize:=ds.customer.all()  //force
+			Else 
+				This.customersToVectorize:=ds.customer.query("vector == null")
+			End if 
+			
+			This.vectorizeStartTime:=Milliseconds
+			This.vectorizeCount:=This.customersToVectorize.length
+			
+			This.vectorizeCustomers()
+			
 		: ($event.objectName="btnGenerateCustomers")
 			
 			This.dataGenerator:=cs.AI_DataGenerator.new(This.providersGen.currentValue; This.modelsGen.currentValue)
@@ -108,8 +121,8 @@ Function onClicked() : cs.formVectorize
 			This.failedAttempts:=0
 			This.maxFailedAttempts:=10
 			
-			This.customerGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.customerSystemPrompt; {model: $model; onResponse: This.onCustomerGenerated})
-			This.addressGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.addressSystemPrompt; {model: $model; onResponse: This.onAddressGenerated})
+			This.customerGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.customerSystemPrompt; {model: This.modelsGen.currentValue; onResponse: This.onCustomerGenerated})
+			This.addressGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.addressSystemPrompt; {model: This.modelsGen.currentValue; onResponse: This.onAddressGenerated})
 			
 			This.alreadyThere:=ds.customer.getCount()
 			This.actions.generatingCustomers.running:=1
@@ -148,19 +161,50 @@ Function onDataChange() : cs.formVectorize
 	
 	return This
 	
-Function terminateVectorizing_()
+	//MARK: functions
 	
-	OBJECT SET VISIBLE(*; "embedding@"; False)
-	OBJECT SET VISIBLE(*; "btnVectorize"; True)
+Function onCustomerVectorized($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResult)
 	
-	If (ds.embeddingInfo.embeddingStatus())
-		Form.actions.embedding.status:="Done"
-		Form.actions.embedding.info:=ds.embeddingInfo.info()
-	Else 
-		Form.actions.embedding.status:="Missing"
+	If (Form#Null)
+		If ($embeddingsResult.success)
+			var $customer : cs.customerEntity
+			$customer:=ds.customer.get($embeddingsResult.request.headers.customer)
+			If ($customer#Null)
+				$customer.vector:=$embeddingsResult.vector
+				$customer.save()
+			End if 
+			Form.actions.embedding.progress.value:=Int(Form.customersToVectorize.length/Form.vectorizeCount*100)
+			Form.actions.embedding.progress.message:="Vectorizing customers "+String(Form.customersToVectorize.length)+"/"+String(Form.vectorizeCount)
+			Form.actions.embedding.info.duration:=(Milliseconds-Form.vectorizeStartTime)
+		Else 
+			Form.failedAttempts+=1
+		End if 
+		
+		Form.vectorizeCustomers()
+		
 	End if 
 	
-	//MARK: functions
+Function vectorizeCustomers() : cs.formVectorize
+	
+	If (This.customersToVectorize.length#0)
+		OBJECT SET VISIBLE(*; "embedding@"; True)
+		OBJECT SET VISIBLE(*; "btnVectorize"; False)
+		var $customer : cs.customerEntity
+		$customer:=This.customersToVectorize.first()
+		This.customersToVectorize:=This.customersToVectorize.slice(1)
+		This.vectorizer.vectorize($customer.stringify(); {onResponse: This.onCustomerVectorized; extraHeaders: {customer: $customer.getKey(dk key as string)}})
+	Else 
+		OBJECT SET VISIBLE(*; "embedding@"; False)
+		OBJECT SET VISIBLE(*; "btnVectorize"; True)
+		If (ds.embeddingInfo.embeddingStatus())
+			Form.actions.embedding.status:="Done"
+			Form.actions.embedding.info:=ds.embeddingInfo.info()
+		Else 
+			Form.actions.embedding.status:="Missing"
+		End if 
+	End if 
+	
+	return This
 	
 Function addressesToGenerate() : Integer
 	

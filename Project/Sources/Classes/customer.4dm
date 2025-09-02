@@ -1,41 +1,5 @@
 Class extends DataClass
 
-Function vectorizeAll($provider : Text; $model : Text; $callback : Object)
-	var $customer : cs.customerEntity
-	var $embeddingInfo : cs.embeddingInfoEntity
-	var $startTime : Integer:=Milliseconds
-	var $endTime : Integer
-	var $total; $generated : Integer
-	var $progress : Object:={}
-	
-	$total:=This.all().length
-	$generated:=0
-	
-	For each ($customer; This.all())
-		$customer.vectorize($provider; $model; True)
-		$customer.save()
-		
-		If ($callback#Null)
-			$generated+=1
-			$progress.value:=Int($generated/$total*100)
-			$progress.message:="Generating embeddings "+String($generated)+"/"+String($total)
-			CALL FORM($callback.window; $callback.formula; $progress)
-		End if 
-		
-	End for each 
-	
-	$endTime:=Milliseconds
-	
-	$embeddingInfo:=ds.embeddingInfo.info()
-	$embeddingInfo.provider:=$provider
-	$embeddingInfo.model:=$model
-	$embeddingInfo.embeddingDate:=Current date
-	$embeddingInfo.embeddingTime:=Current time
-	$embeddingInfo.duration:=$endTime-$startTime
-	
-	$embeddingInfo.save()
-	
-	
 Function pushCustomerSimilarity($customersCol : Collection; $customerX : cs.customerEntity; $customerY : cs.customerEntity; $similarity : Real) : Collection
 /**
 * $customerX similarity with $customerY is the same than
@@ -100,8 +64,4 @@ Function newCustomerFromObject($customerObject : Object) : cs.customerEntity
 	$customer.fromObject($customerObject)
 	$customer.address:=cs.address.new($addressObj)
 	return $customer
-	
-	
-	
-	
 	

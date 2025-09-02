@@ -60,6 +60,14 @@ Function getProvidersListFromFile($path : Text) : Collection
 	
 Function get embeddingDateTime() : Text
 	
+	If (This.actions.embedding.info.embeddingDate=Null)
+		return 
+	End if 
+	
+	If (This.actions.embedding.info.embeddingTime=Null)
+		return 
+	End if 
+	
 	return String(This.actions.embedding.info.embeddingDate; "dd/MM/yyyy")+" "+String(Time(This.actions.embedding.info.embeddingTime); "HH:mm:ss")
 	
 Function setModelList($providerList : Object; $kind : Text) : Object

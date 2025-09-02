@@ -99,14 +99,14 @@ Function btnNewCustomerEventHandler($formEventCode : Integer)
 	End case 
 	
 Function btnSaveCustomerEventHandler($formEventCode : Integer)
-	Case of 
-		: ($formEventCode=On Clicked)
-			If (This.newCustomer.valid)
-				This.newCustomer.saveAndVectorize()
-			Else 
-				throw(999; "Customer cannot be saved, check your data")
-			End if 
-	End case 
+	//Case of 
+	//: ($formEventCode=On Clicked)
+	//If (This.newCustomer.valid)
+	//This.newCustomer.saveAndVectorize()
+	//Else 
+	//throw(999; "Customer cannot be saved, check your data")
+	//End if 
+	//End case 
 	
 	
 	

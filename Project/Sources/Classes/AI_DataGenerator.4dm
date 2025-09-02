@@ -1,3 +1,5 @@
+Class extends AI_Agent
+
 property customerExpectedSchema : Object
 property addressExpectedSchema : Object
 property singleCustomerExpectedSchema : Object
@@ -6,8 +8,6 @@ property addressColExpectedSchema : Collection
 property customerSystemPrompt : Text
 property addressSystemPrompt : Text
 property singleCustomerSystemPrompt : Text
-
-Class extends AI_Agent
 
 Class constructor($providerName : Text; $model : Text)
 	

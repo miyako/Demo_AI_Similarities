@@ -1,8 +1,5 @@
 Class extends Entity
 
-/**
-* Computed attributes
-**/
 Function get addressStr() : Text
 	If (This.address=Null)
 		return ""
@@ -11,6 +8,7 @@ Function get addressStr() : Text
 	End if 
 	
 Function set addressStr()
+	//readOnly
 	
 Function get fullname() : Text
 	var $fullname : Text
@@ -20,6 +18,7 @@ Function get fullname() : Text
 	return $fullname
 	
 Function set fullname()
+	//readOnly
 	
 Function get valid() : Boolean
 /* 
@@ -35,10 +34,7 @@ Function get valid() : Boolean
 	return False
 	
 Function set valid()
-	
-/**
-* Functions
-**/
+	//readOnly
 	
 Function stringify() : Text
 	var $stringified : Text
@@ -51,16 +47,6 @@ Function stringify() : Text
 	$stringified+=(This.address) ? This.address.stringify() : ""
 	
 	return $stringified
-	
-Function vectorize($provider : Text; $model : Text; $force : Boolean)
-	var $objectToVectorize : Object
-	var $vectorizer : cs.AI_Vectorizer
-	
-	$vectorizer:=cs.AI_Vectorizer.new($provider; $model)
-	
-	If (($force) || (This.vector=Null))
-		This.vector:=$vectorizer.vectorize(This.stringify())
-	End if 
 	
 Function searchSimilarCustomers($targetSimilarity : Real) : Collection
 	var $embeddingInfo : cs.embeddingInfoEntity
@@ -87,11 +73,4 @@ Function searchSimilarCustomers($targetSimilarity : Real) : Collection
 	End for each 
 	$similarCustomersCol:=$similarCustomersCol.orderBy("similarity desc")
 	return $similarCustomersCol
-	
-Function saveAndVectorize()
-	var $embeddingInfo : cs.embeddingInfoEntity
-	
-	$embeddingInfo:=ds.embeddingInfo.info()
-	This.vectorize($embeddingInfo.provider; $embeddingInfo.model; True)
-	This.save()
 	

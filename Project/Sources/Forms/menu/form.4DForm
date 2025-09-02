@@ -659,7 +659,6 @@
 					"events": [
 						"onClick"
 					],
-					"method": "ObjectMethods/btnVectorize.4dm",
 					"fontFamily": "Avenir Light",
 					"fontSize": 13
 				},
@@ -905,7 +904,7 @@
 					"top": 182,
 					"width": 209,
 					"height": 42,
-					"dataSource": "ds:C1482.customer.all().length",
+					"dataSource": "ds:C1482.customer.getCount()",
 					"enterable": false,
 					"focusable": false,
 					"borderStyle": "none",
@@ -941,7 +940,7 @@
 					"top": 182,
 					"width": 210,
 					"height": 42,
-					"dataSource": "ds:C1482.customer.all().query(\"vector = null\").length",
+					"dataSource": "ds:C1482.customer.query(\"vector = null\").length",
 					"enterable": false,
 					"focusable": false,
 					"borderStyle": "none",
@@ -1065,7 +1064,7 @@
 					"fontSize": 13,
 					"fontWeight": "normal"
 				},
-				"Input1": {
+				"embeddingDateTime": {
 					"type": "input",
 					"left": 900,
 					"top": 300,
@@ -1452,12 +1451,9 @@
 			}
 		}
 	],
-	"geometryStamp": 274,
+	"geometryStamp": 275,
 	"editor": {
 		"groups": {
-			"Group": [
-				"Rectangle2"
-			],
 			"Group1": [
 				"Text3",
 				"openAIKitLink"
@@ -1470,7 +1466,7 @@
 			"Group11": [
 				"Rectangle6",
 				"Text32",
-				"Input1"
+				"embeddingDateTime"
 			],
 			"Group2": [
 				"Text6",

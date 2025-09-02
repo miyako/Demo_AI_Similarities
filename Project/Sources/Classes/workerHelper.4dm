@@ -1,14 +1,6 @@
 singleton Class constructor()
 	
 /**
-* Vectorize
-**/
-Function vectorizeCustomers($formObject : Object; $window : Integer)
-	ds.customer.vectorizeAll($formObject.providersEmb.currentValue; $formObject.modelsEmb.currentValue; {window: $window; formula: Formula($formObject.progressVectorizing($1))})
-	CALL FORM($window; Formula($formObject.terminateVectorizing()))
-	
-	
-/**
 * Generate a random customer
 **/
 Function generateCustomer($formObject : Object; $window : Integer)
