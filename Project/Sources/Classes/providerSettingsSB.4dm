@@ -1,51 +1,18 @@
-property keysFilePath : Text
+Class extends AI
 
 singleton Class constructor()
 	
-	This.keysFilePath:="/RESOURCES/AIProviders.json"
+	Super()
 	
-Function openProviderFile($path : Text) : Collection
+Function providers() : Collection
 	
-	If ($path="")
-		return []
-	End if 
-	
-	var $file : 4D.File
-	$file:=File($path)
-	
-	If (Not($file.exists))
-		return []
-	End if 
-	
-	var $collection : Collection
-	$collection:=Try(JSON Parse($file.getText(); Is collection))
-	If ($collection=Null)
-		return []
-	End if 
-	
-	return $collection
-	
-Function writeProviderFile($jsonContent : Collection)
-	
-	var $file : 4D.File
-	$file:=File(This.keysFilePath)
-	$file.setText(JSON Stringify($jsonContent; *))
+	return This.openProviderFile(This.keysFilePath)
 	
 Function provider($provider : Text) : Object
 	
-	var $providers : Collection
-	$providers:=This.openProviderFile(This.keysFilePath)
-	var $key : Object
-	$key:=$providers.query("name = :1"; $provider).first()
+	return This.providers.query("name == :1"; $provider).first()
 	
-	If ($key=Null)
-		throw(999; "Provider "+$provider+" not defined in "+This.keysFilePath)
-		return {}
-	End if 
-	
-	return $key
-	
-Function updateProviders()
+Function updateProviderSettings()
 	
 	var $jsonText : Text
 	var $jsonContent : Collection

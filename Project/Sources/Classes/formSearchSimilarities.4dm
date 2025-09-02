@@ -15,18 +15,24 @@ Class constructor($menu : Collection)
 	
 	//MARK: form events & callbacks
 	
+Function onLoad() : cs.formSearchSimilarities
+	
+	Super.onLoad()
+	
+	This.actions:=This.actions=Null ? {} : This.actions
+	This.actions.searchingSimilarities:={progress: {message: ""}; similarityLevel: 90}
+	
+	return This
+	
 Function onPageChange() : cs.formSearchSimilarities
 	
 	Super.onPageChange()
 	
 	Case of 
 		: (This.menu.currentValue="Search similarities")
-			This.actions:={\
-				searchingSimilarities: {progress: {message: ""}; \
-				similarityLevel: 90}\
-				}
-			OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
-			OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
+			
+			This.refreshStatus()
+			
 	End case 
 	
 	return This
@@ -90,6 +96,16 @@ Function onClicked() : cs.formSearchSimilarities
 	return This
 	
 	//MARK: functions
+	
+Function refreshStatus() : cs.formSearchSimilarities
+	
+	Super.refreshStatus()
+	
+	OBJECT SET ENABLED(*; "btnSearchSimilarities"; Bool(ds.embeddingInfo.embeddingStatus()))
+	OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
+	OBJECT SET TITLE(*; "btnSearchSimilarities"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
+	
+	return This
 	
 Function searchAllSimilarCustomers()
 	

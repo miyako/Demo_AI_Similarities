@@ -3,8 +3,8 @@
 		"version": "1",
 		"kind": "form"
 	},
-	"windowSizingX": "variable",
-	"windowSizingY": "variable",
+	"windowSizingX": "fixed",
+	"windowSizingY": "fixed",
 	"windowMinWidth": 0,
 	"windowMinHeight": 0,
 	"windowMaxWidth": 32767,
@@ -1451,7 +1451,7 @@
 			}
 		}
 	],
-	"geometryStamp": 276,
+	"geometryStamp": 278,
 	"editor": {
 		"groups": {
 			"Group1": [

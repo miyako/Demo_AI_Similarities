@@ -41,6 +41,7 @@ Function onCustomerVectorized($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResul
 				$customer.vector:=$embeddingsResult.vector
 				$customer.save()
 			End if 
+			var $total; $progress : Integer
 			$total:=Form.vectorizeCount
 			$progress:=Form.vectorizeCount-Form.customersToVectorize.length
 			Form.actions.embedding.progress.value:=Int($progress/$total*100)
@@ -57,9 +58,12 @@ Function onCustomerVectorized($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResul
 Function onAddressGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
 	If (Form#Null)
+		var $result : Object
 		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
 		If ($result.success)
+			var $addresses : Collection
 			$addresses:=$result.response
+			var $customer : cs.customerEntity
 			For each ($customer; ds.customer.query("address == null").slice(0; $addresses.length))
 				$customer.address:=cs.address.new($addresses.pop())
 				$customer.save()
@@ -75,7 +79,9 @@ Function onAddressGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompleti
 Function onCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
 	If (Form#Null)
+		var $quantity : Integer
 		$quantity:=Form.actions.generatingCustomers.quantity
+		var $result : Object
 		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
 		If ($result.success)
 			ds.customer.fromCollection($result.response)
@@ -86,9 +92,22 @@ Function onCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatComplet
 			Form.failedAttempts+=1
 		End if 
 		
-		Form.updateStatus().populateAddresses().generateCustomers()
+		Form.refreshStatus().populateAddresses().generateCustomers()
 		
 	End if 
+	
+Function onLoad() : cs.formVectorize
+	
+	Super.onLoad()
+	
+	This.actions:=This.actions=Null ? {} : This.actions
+	This.actions.embedding:={running: 0; progress: {value: 0; message: ""}}
+	This.actions.generatingCustomers:={running: 0; progress: {value: 0; message: ""}; quantity: 30; quantityBy: 10}
+	
+	OBJECT SET VISIBLE(*; "customerGen@"; False)
+	OBJECT SET VISIBLE(*; "embedding@"; False)
+	
+	return This.refreshProviderSettings()
 	
 Function onPageChange() : cs.formVectorize
 	
@@ -97,10 +116,7 @@ Function onPageChange() : cs.formVectorize
 	Case of 
 		: (This.menu.currentValue="Data Gen & Embeddings 🪄")
 			
-			This.updateModels().updateActions().updateStatus()
-			
-			OBJECT SET VISIBLE(*; "customerGen@"; False)
-			OBJECT SET VISIBLE(*; "embedding@"; False)
+			This.refreshStatus()
 			
 	End case 
 	
@@ -154,6 +170,8 @@ Function onClicked() : cs.formVectorize
 			
 			This.actions.embedding:={running: 0; progress: {value: 0; message: ""}; status: "Missing"}
 			
+			Form.refreshStatus()
+			
 	End case 
 	
 	return This
@@ -204,7 +222,7 @@ Function vectorizeCustomers() : cs.formVectorize
 	Else 
 		OBJECT SET VISIBLE(*; "embedding@"; False)
 		OBJECT SET VISIBLE(*; "btnVectorize"; True)
-		Form.updateStatus()
+		Form.refreshStatus()
 		Form.actions.embedding.info.embeddingDate:=Current date
 		Form.actions.embedding.info.embeddingTime:=Current time
 		If (ds.embeddingInfo.embeddingStatus())
@@ -229,11 +247,13 @@ Function addressesToGenerate() : Integer
 	
 Function populateAddresses() : cs.formVectorize
 	
+	var $toGenerate : Integer
 	$toGenerate:=This.addressesToGenerate()
 	
 	If ($toGenerate>0) && (This.failedAttempts<This.maxFailedAttempts)
 		OBJECT SET VISIBLE(*; "customerGen@"; True)
 		OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
+		var $prompt : Text
 		$prompt:="generate "+String($toGenerate)+" addresses"
 		Form.addressGenerator.prompt($prompt)
 	Else 
@@ -256,10 +276,12 @@ Function customersToGenerate() : Integer
 	
 Function generateCustomers() : cs.formVectorize
 	
+	var $toGenerate : Integer
 	$toGenerate:=This.customersToGenerate()
 	If ($toGenerate>0) && (This.failedAttempts<This.maxFailedAttempts)
 		OBJECT SET VISIBLE(*; "customerGen@"; True)
 		OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
+		var $prompt : Text
 		$prompt:="generate "+String($toGenerate)+" customers"
 		Form.customerGenerator.prompt($prompt)
 	Else 
@@ -271,19 +293,11 @@ Function generateCustomers() : cs.formVectorize
 	
 	return This
 	
-Function updateStatus() : cs.formVectorize
+Function refreshStatus() : cs.formVectorize
 	
 	This.customersToVectorize:=ds.customer.query("vector == null")
 	OBJECT SET ENABLED(*; "btnVectorize"; This.customersToVectorize.length#0)
 	
-	return This
-	
-Function updateActions() : cs.formVectorize
-	
-	This.actions:={\
-		embedding: {running: 0; progress: {value: 0; message: ""}}; \
-		generatingCustomers: {running: 0; progress: {value: 0; message: ""}; quantity: 30; quantityBy: 10}\
-		}
 	If (ds.embeddingInfo.embeddingStatus())
 		This.actions.embedding.status:="Done"
 		This.actions.embedding.info:=ds.embeddingInfo.info()
@@ -293,7 +307,9 @@ Function updateActions() : cs.formVectorize
 	
 	return This
 	
-Function updateModels() : cs.formVectorize
+Function refreshProviderSettings() : cs.formVectorize
+	
+	Super.refreshProviderSettings()
 	
 	var $providers : cs.providerSettingsSelection
 	var $provider : cs.providerSettingsEntity

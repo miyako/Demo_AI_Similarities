@@ -1,4 +1,8 @@
+property keysFilePath : Text
+
 Class constructor
+	
+	This.keysFilePath:="/RESOURCES/AIProviders.json"
 	
 Function getAIStructuredResponse($AIresponse : Object; $expectedFormat : Integer) : Object
 	
@@ -51,3 +55,29 @@ Function getAIStructuredResponse($AIresponse : Object; $expectedFormat : Integer
 	
 	return {success: True; response: $response; kind: $expectedFormat; error: Null}
 	
+Function openProviderFile($path : Text) : Collection
+	
+	If ($path="")
+		return []
+	End if 
+	
+	var $file : 4D.File
+	$file:=File($path)
+	
+	If (Not($file.exists))
+		return []
+	End if 
+	
+	var $collection : Collection
+	$collection:=Try(JSON Parse($file.getText(); Is collection))
+	If ($collection=Null)
+		return []
+	End if 
+	
+	return $collection
+	
+Function writeProviderFile($jsonContent : Collection)
+	
+	var $file : 4D.File
+	$file:=File(This.keysFilePath)
+	$file.setText(JSON Stringify($jsonContent; *))

@@ -1,5 +1,8 @@
 //%attributes = {"invisible":true}
-cs.providerSettingsSB.new().updateProviders()
+var $providers : Collection
+$providers:=cs.providerSettingsSB.me.providers()
+
+cs.providerSettingsSB.me.updateProviderSettings()
 
 var $OpenAI; $Ollama : Object
 $OpenAI:=cs.providerSettingsSB.me.provider("OpenAI")

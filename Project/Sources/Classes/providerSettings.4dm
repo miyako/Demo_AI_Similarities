@@ -1,25 +1,15 @@
 Class extends DataClass
 
-Function getProvidersListFromFile($path : Text) : Collection
+Function providers() : cs.providerSettingsSelection
 	
-	If ($path="")
-		return []
-	End if 
+	return This.all()
 	
-	var $file : 4D.File
-	$file:=File($path)
+Function provider($provider : Text) : cs.providerSettingsEntity
 	
-	If (Not($file.exists))
-		return []
-	End if 
-	
-	return JSON Parse($file.getText(); Is collection)
-	
-Function loadDefaults()
-	
-	This.fromCollection(This.getProvidersListFromFile("/RESOURCES/AIProviders.json"))
+	return This.query("name == :1"; $provider).first()
 	
 Function updateProviderSettings()
+	
 	var $providers : cs.providerSettingsSelection:=This.all()
 	var $provider : cs.providerSettingsEntity
 	var $AIClient : cs.AIKit.OpenAI
@@ -31,9 +21,10 @@ Function updateProviderSettings()
 	var $defaultModel : Object
 	
 	If (This.getCount()=0)
-		This.loadDefaults()
+		This.fromCollection(cs.providerSettingsSB.me.providers)
 	End if 
 	
+	var $keyFile : 4D.File
 	For each ($provider; $providers)
 		$keyFile:=File("/PACKAGE/"+$provider.name+".token")
 		If ($provider.key="" && $keyFile.exists)
@@ -87,6 +78,7 @@ Function add() : cs.providerSettingsEntity
 	return $newProvider
 	
 Function providersAvailable($kind : Text) : cs.providerSettingsSelection
+	
 	Case of 
 		: ($kind="embedding")
 			return This.query("hasEmbeddingModels = true")

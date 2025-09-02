@@ -42,9 +42,10 @@
 			"providerSettingsEntity"
 		]
 	},
-	"Singleton": {
+	"Settings": {
 		"methods": [
-			"sandbox"
+			"settings",
+			"settings_sandbox"
 		],
 		"classes": [
 			"providerSettingsSB"

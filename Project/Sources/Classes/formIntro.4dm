@@ -11,7 +11,7 @@ Class constructor($menu : Collection)
 	
 	$menu:=$menu=Null ? [] : $menu
 	
-	Super($menu.unshift("Intro"))  //; "Data Gen & Embeddings 🪄"; "Create Customers 🪄"])
+	Super($menu.unshift("Intro"))  // "Create Customers 🪄"])
 	
 	This.providers:=ds.providerSettings.all()
 	This.providersListBox:={}
@@ -55,7 +55,7 @@ Function onOpenAIModelListResult($modelsList : cs.AIKit.OpenAIModelListResult)
 				End if 
 			End if 
 			$provider.save()
-			Form.allProviders()
+			Form.refreshProviderSettings()
 		End if 
 	End if 
 	
@@ -96,7 +96,7 @@ Function onClicked() : cs.formIntro
 		: ($event.objectName="btnDelete")
 			
 			This.providersListBox.currentItem.drop()
-			This.allProviders()
+			This.refreshProviderSettings()
 			
 		: ($event.objectName="btnAdd")
 			
@@ -157,7 +157,7 @@ Function onPageChange() : cs.formIntro
 	
 	//MARK: functions
 	
-Function allProviders() : cs.formIntro
+Function refreshProviderSettings() : cs.formIntro
 	
 	This.providers:=ds.providerSettings.all()
 	If (This.providers.length#0)

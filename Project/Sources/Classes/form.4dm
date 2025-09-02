@@ -43,21 +43,6 @@ Function onSelectionChange() : cs.form
 	
 	//MARK: functions
 	
-Function getProvidersListFromFile($path : Text) : Collection
-	
-	If ($path="")
-		return []
-	End if 
-	
-	var $file : 4D.File
-	$file:=File($path)
-	
-	If (Not($file.exists))
-		return []
-	End if 
-	
-	return JSON Parse($file.getText(); Is collection)
-	
 Function setModelList($providerList : Object; $kind : Text) : Object
 	
 	var $provider : cs.providerSettingsEntity
