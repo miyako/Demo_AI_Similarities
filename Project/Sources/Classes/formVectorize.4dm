@@ -31,6 +31,29 @@ Class constructor($menu : Collection)
 	
 	//MARK: form events & callbacks
 	
+Function onCustomerVectorized($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResult)
+	
+	If (Form#Null)
+		If ($embeddingsResult.success)
+			var $customer : cs.customerEntity
+			$customer:=ds.customer.get($embeddingsResult.request.headers.customer)
+			If ($customer#Null)
+				$customer.vector:=$embeddingsResult.vector
+				$customer.save()
+			End if 
+			$total:=Form.vectorizeCount
+			$progress:=Form.vectorizeCount-Form.customersToVectorize.length
+			Form.actions.embedding.progress.value:=Int($progress/$total*100)
+			Form.actions.embedding.progress.message:="Generating embeddings "+String($progress)+"/"+String($total)
+			Form.actions.embedding.info.duration:=(Milliseconds-Form.vectorizeStartTime)
+		Else 
+			Form.failedAttempts+=1
+		End if 
+		
+		Form.vectorizeCustomers()
+		
+	End if 
+	
 Function onAddressGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
 	If (Form#Null)
@@ -63,7 +86,7 @@ Function onCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatComplet
 			Form.failedAttempts+=1
 		End if 
 		
-		Form.populateAddresses().generateCustomers()
+		Form.updateStatus().populateAddresses().generateCustomers()
 		
 	End if 
 	
@@ -74,7 +97,7 @@ Function onPageChange() : cs.formVectorize
 	Case of 
 		: (This.menu.currentValue="Data Gen & Embeddings 🪄")
 			
-			This.updateModels().updateActions()
+			This.updateModels().updateActions().updateStatus()
 			
 			OBJECT SET VISIBLE(*; "customerGen@"; False)
 			OBJECT SET VISIBLE(*; "embedding@"; False)
@@ -98,15 +121,9 @@ Function onClicked() : cs.formVectorize
 			This.actions.embedding.running:=1
 			This.actions.embedding.status:="In progress"
 			This.actions.embedding.info:=ds.embeddingInfo.dummyInfo()
-			This.actions.embedding.model:=This.modelsGen.currentValue
-			This.actions.embedding.provider:=This.providersGen.currentValue
+			This.actions.embedding.info.model:=This.modelsGen.currentValue
+			This.actions.embedding.info.provider:=This.providersGen.currentValue
 			This.actions.embedding.progress:={value: 0; message: "Generating embeddings"}
-			
-			If (False)
-				This.customersToVectorize:=ds.customer.all()  //force
-			Else 
-				This.customersToVectorize:=ds.customer.query("vector == null")
-			End if 
 			
 			This.vectorizeStartTime:=Milliseconds
 			This.vectorizeCount:=This.customersToVectorize.length
@@ -161,28 +178,19 @@ Function onDataChange() : cs.formVectorize
 	
 	return This
 	
-	//MARK: functions
+Function get embeddingDateTime() : Text
 	
-Function onCustomerVectorized($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResult)
-	
-	If (Form#Null)
-		If ($embeddingsResult.success)
-			var $customer : cs.customerEntity
-			$customer:=ds.customer.get($embeddingsResult.request.headers.customer)
-			If ($customer#Null)
-				$customer.vector:=$embeddingsResult.vector
-				$customer.save()
-			End if 
-			Form.actions.embedding.progress.value:=Int(Form.customersToVectorize.length/Form.vectorizeCount*100)
-			Form.actions.embedding.progress.message:="Vectorizing customers "+String(Form.customersToVectorize.length)+"/"+String(Form.vectorizeCount)
-			Form.actions.embedding.info.duration:=(Milliseconds-Form.vectorizeStartTime)
-		Else 
-			Form.failedAttempts+=1
-		End if 
-		
-		Form.vectorizeCustomers()
-		
+	If (This.actions.embedding.info.embeddingDate=Null)
+		return 
 	End if 
+	
+	If (This.actions.embedding.info.embeddingTime=Null)
+		return 
+	End if 
+	
+	return String(This.actions.embedding.info.embeddingDate; "dd/MM/yyyy")+" "+String(Time(This.actions.embedding.info.embeddingTime); "HH:mm:ss")
+	
+	//MARK: functions
 	
 Function vectorizeCustomers() : cs.formVectorize
 	
@@ -196,12 +204,16 @@ Function vectorizeCustomers() : cs.formVectorize
 	Else 
 		OBJECT SET VISIBLE(*; "embedding@"; False)
 		OBJECT SET VISIBLE(*; "btnVectorize"; True)
+		Form.updateStatus()
+		Form.actions.embedding.info.embeddingDate:=Current date
+		Form.actions.embedding.info.embeddingTime:=Current time
 		If (ds.embeddingInfo.embeddingStatus())
 			Form.actions.embedding.status:="Done"
 			Form.actions.embedding.info:=ds.embeddingInfo.info()
 		Else 
 			Form.actions.embedding.status:="Missing"
 		End if 
+		Form.actions.embedding.info.save()
 	End if 
 	
 	return This
@@ -256,6 +268,13 @@ Function generateCustomers() : cs.formVectorize
 			OBJECT SET VISIBLE(*; "btnGenerateCustomers"; True)
 		End if 
 	End if 
+	
+	return This
+	
+Function updateStatus() : cs.formVectorize
+	
+	This.customersToVectorize:=ds.customer.query("vector == null")
+	OBJECT SET ENABLED(*; "btnVectorize"; This.customersToVectorize.length#0)
 	
 	return This
 	

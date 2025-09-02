@@ -940,7 +940,7 @@
 					"top": 182,
 					"width": 210,
 					"height": 42,
-					"dataSource": "ds:C1482.customer.query(\"vector = null\").length",
+					"dataSource": "Form:C1466.customersToVectorize.length",
 					"enterable": false,
 					"focusable": false,
 					"borderStyle": "none",
@@ -1064,7 +1064,7 @@
 					"fontSize": 13,
 					"fontWeight": "normal"
 				},
-				"embeddingDateTime": {
+				"DateTime": {
 					"type": "input",
 					"left": 900,
 					"top": 300,
@@ -1076,7 +1076,7 @@
 					"borderStyle": "none",
 					"fontFamily": "Avenir Light",
 					"fontSize": 18,
-					"dataSourceTypeHint": "integer",
+					"dataSourceTypeHint": "text",
 					"fill": "transparent",
 					"fontWeight": "bold",
 					"textAlign": "right"
@@ -1451,7 +1451,7 @@
 			}
 		}
 	],
-	"geometryStamp": 275,
+	"geometryStamp": 276,
 	"editor": {
 		"groups": {
 			"Group1": [
@@ -1466,7 +1466,7 @@
 			"Group11": [
 				"Rectangle6",
 				"Text32",
-				"embeddingDateTime"
+				"DateTime"
 			],
 			"Group2": [
 				"Text6",
