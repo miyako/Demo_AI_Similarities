@@ -10,7 +10,8 @@ property failedAttempts : Integer
 property maxFailedAttempts : Integer
 
 property dataGenerator : cs.AI_DataGenerator
-property chatHelper : cs.AIKit.OpenAIChatHelper
+property customerGenerator : cs.AIKit.OpenAIcustomerGenerator
+property addressGenerator : cs.AIKit.OpenAIcustomerGenerator
 
 Class constructor($menu : Collection)
 	
@@ -25,11 +26,28 @@ Class constructor($menu : Collection)
 	
 	//MARK: form events & callbacks
 	
-Function onDataGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
+Function onAddressGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
+	
+	If (Form#Null)
+		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
+		If ($result.success)
+			$addresses:=$result.response
+			For each ($customer; ds.customer.query("address == null").slice(0; $addresses.length))
+				$customer.address:=cs.address.new($addresses.pop())
+				$customer.save()
+			End for each 
+		Else 
+			Form.failedAttempts+=1
+		End if 
+		
+		Form.populateAddresses()
+		
+	End if 
+	
+Function onCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
 	If (Form#Null)
 		$quantity:=Form.actions.generatingCustomers.quantity
-		$quantityBy:=Form.actions.generatingCustomers.quantityBy
 		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
 		If ($result.success)
 			ds.customer.fromCollection($result.response)
@@ -40,7 +58,7 @@ Function onDataGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletions
 			Form.failedAttempts+=1
 		End if 
 		
-		Form.generateCustomers()
+		Form.populateAddresses().generateCustomers()
 		
 	End if 
 	
@@ -59,15 +77,6 @@ Function onPageChange() : cs.formVectorize
 	End case 
 	
 	return This
-	
-Function gencust()
-	var $customerGenerator : cs.AI_DataGenerator
-	var $formulaCallback : 4D.Function
-	
-	$customerGenerator:=cs.AI_DataGenerator.new($formObject.providersGen.currentValue; $formObject.modelsGen.currentValue)
-	$customerGenerator.generateCustomers($formObject.actions.generatingCustomers.quantity; $formObject.actions.generatingCustomers.quantityBy; {window: $window; formula: Formula($formObject.progressGenerateCustomers($1))})
-	$customerGenerator.populateAddresses(10; {window: $window; formula: Formula($formObject.progressGenerateCustomers($1))})
-	CALL FORM($window; Formula($formObject.terminateGenerateCustomers()))
 	
 Function btnVectorizeEventHandler($formEventCode : Integer)
 	Case of 
@@ -98,25 +107,15 @@ Function onClicked() : cs.formVectorize
 			This.generated:=0
 			This.failedAttempts:=0
 			This.maxFailedAttempts:=10
-			This.chatHelper:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.customerSystemPrompt; {model: $model; onResponse: This.onDataGenerated})
+			
+			This.customerGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.customerSystemPrompt; {model: $model; onResponse: This.onCustomerGenerated})
+			This.addressGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.addressSystemPrompt; {model: $model; onResponse: This.onAddressGenerated})
+			
 			This.alreadyThere:=ds.customer.getCount()
 			This.actions.generatingCustomers.running:=1
 			This.actions.generatingCustomers.progress:={value: 0; message: "Generating customers"}
 			
 			This.generateCustomers()
-			
-			//$customerGenerator.populateAddresses(10; {window: $window; formula: Formula($formObject.progressGenerateCustomers($1))})
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			
 		: ($event.objectName="btnDropData")
 			
@@ -163,22 +162,58 @@ Function terminateVectorizing_()
 	
 	//MARK: functions
 	
-Function generateCustomers()
+Function addressesToGenerate() : Integer
+	
+	var $quantity; $quantityBy; $toGenerate : Integer
+	$quantity:=ds.customer.query("address == null").length
+	$quantityBy:=This.actions.generatingCustomers.quantityBy
+	$toGenerate:=($quantityBy<$quantity) ? $quantityBy : $quantity
+	
+	return $toGenerate
+	
+Function populateAddresses() : cs.formVectorize
+	
+	$toGenerate:=This.addressesToGenerate()
+	
+	If ($toGenerate>0) && (This.failedAttempts<This.maxFailedAttempts)
+		OBJECT SET VISIBLE(*; "customerGen@"; True)
+		OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
+		$prompt:="generate "+String($toGenerate)+" addresses"
+		Form.addressGenerator.prompt($prompt)
+	Else 
+		If (0=This.customersToGenerate())
+			OBJECT SET VISIBLE(*; "customerGen@"; False)
+			OBJECT SET VISIBLE(*; "btnGenerateCustomers"; True)
+		End if 
+	End if 
+	
+	return This
+	
+Function customersToGenerate() : Integer
 	
 	var $quantity; $quantityBy; $toGenerate : Integer
 	$quantity:=This.actions.generatingCustomers.quantity
 	$quantityBy:=This.actions.generatingCustomers.quantityBy
-	
 	$toGenerate:=($quantityBy<($quantity-This.generated)) ? $quantityBy : ($quantity-This.generated)
-	If ($toGenerate>0) && (Form.failedAttempts<Form.maxFailedAttempts)
+	
+	return $toGenerate
+	
+Function generateCustomers() : cs.formVectorize
+	
+	$toGenerate:=This.customersToGenerate()
+	If ($toGenerate>0) && (This.failedAttempts<This.maxFailedAttempts)
 		OBJECT SET VISIBLE(*; "customerGen@"; True)
 		OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
 		$prompt:="generate "+String($toGenerate)+" customers"
-		Form.chatHelper.prompt($prompt)
+		Form.customerGenerator.prompt($prompt)
 	Else 
-		OBJECT SET VISIBLE(*; "customerGen@"; False)
-		OBJECT SET VISIBLE(*; "btnGenerateCustomers"; True)
+		If (0=This.addressesToGenerate())
+			OBJECT SET VISIBLE(*; "customerGen@"; False)
+			OBJECT SET VISIBLE(*; "btnGenerateCustomers"; True)
+		End if 
 	End if 
+	
+	return This
 	
 Function updateActions() : cs.formVectorize
 	
