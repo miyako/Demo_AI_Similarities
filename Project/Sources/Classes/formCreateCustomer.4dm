@@ -197,7 +197,7 @@ Function refreshStatus() : cs.formCreateCustomer
 	
 	Super.refreshStatus()
 	
-	OBJECT SET ENABLED(*; "btnSearchSimilarCustomers@"; Bool(ds.embeddingInfo.embeddingStatus()))
+	OBJECT SET ENABLED(*; "btnSearchSimilarCustomers@"; Bool(ds.embeddingInfo.getCount()#0))
 	OBJECT SET TITLE(*; "btnSearchSimilarCustomers@"; "Search similarities ("+String(This.actions.searchingSimilarities.similarityLevel/100)+")")
 	OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
 	OBJECT SET ENABLED(*; "btnSaveCustomer"; This.newCustomer.valid)

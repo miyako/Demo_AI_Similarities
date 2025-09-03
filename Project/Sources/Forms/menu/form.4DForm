@@ -1179,6 +1179,20 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13,
 					"focusable": false
+				},
+				"btnDropEmbeddings": {
+					"type": "button",
+					"text": "⚠️ Drop all embeddings",
+					"top": 235,
+					"left": 573,
+					"width": 231,
+					"height": 41,
+					"events": [
+						"onClick"
+					],
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"focusable": false
 				}
 			}
 		},
@@ -2266,7 +2280,7 @@
 			}
 		}
 	],
-	"geometryStamp": 345,
+	"geometryStamp": 363,
 	"editor": {
 		"groups": {
 			"Group": [

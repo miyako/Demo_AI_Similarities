@@ -136,9 +136,8 @@ Function onClicked() : cs.formVectorize
 			
 			This.actions.embedding.running:=1
 			This.actions.embedding.status:="In progress"
-			This.actions.embedding.info:=ds.embeddingInfo.dummyInfo()
-			This.actions.embedding.info.model:=This.modelsGen.currentValue
-			This.actions.embedding.info.provider:=This.providersGen.currentValue
+			This.actions.embedding.info.model:=This.modelsEmb.currentValue
+			This.actions.embedding.info.provider:=This.providersEmb.currentValue
 			This.actions.embedding.progress:={value: 0; message: "Generating embeddings"}
 			
 			This.customersToVectorize:=ds.customer.query("vector == null")
@@ -167,6 +166,15 @@ Function onClicked() : cs.formVectorize
 		: ($event.objectName="btnDropData")
 			
 			ds.customer.all().drop()
+			ds.embeddingInfo.all().drop()
+			
+			This.actions.embedding:={running: 0; progress: {value: 0; message: ""}; status: "Missing"}
+			
+			Form.refreshStatus()
+			
+		: ($event.objectName="btnDropEmbeddings")
+			
+			ds.customer.query("vector != null").dropEmbeddings()
 			ds.embeddingInfo.all().drop()
 			
 			This.actions.embedding:={running: 0; progress: {value: 0; message: ""}; status: "Missing"}
@@ -214,14 +222,13 @@ Function vectorizeCustomers() : cs.formVectorize
 		Form.refreshStatus()
 		Form.actions.embedding.info.embeddingDate:=Current date
 		Form.actions.embedding.info.embeddingTime:=Current time
-		If (ds.embeddingInfo.embeddingStatus())
-			Form.actions.embedding.status:="Done"
-			Form.actions.embedding.info:=ds.embeddingInfo.info()
-		Else 
-			Form.actions.embedding.status:="Missing"
-		End if 
 		Form.actions.embedding.info.save()
+		
+		Form.refreshStatus()
+		
 	End if 
+	
+	Form.actions:=Form.actions
 	
 	return This
 	
@@ -284,14 +291,23 @@ Function generateCustomers() : cs.formVectorize
 	
 Function refreshStatus() : cs.formVectorize
 	
-	If (ds.embeddingInfo.embeddingStatus())
-		This.actions.embedding.status:="Done"
-		This.actions.embedding.info:=ds.embeddingInfo.info()
-	Else 
-		This.actions.embedding.status:="Missing"
+	var $missingCount : Integer
+	$missingCount:=ds.embeddingInfo.missingCount()
+	
+	Case of 
+		: (ds.embeddingInfo.getCount()=0)
+			This.actions.embedding.status:=""
+		: ($missingCount=0)
+			This.actions.embedding.status:="Done"
+		Else 
+			This.actions.embedding.status:="Missing"
+	End case 
+	
+	If (This.actions.embedding.info=Null)
+		This.actions.embedding.info:=ds.embeddingInfo.dummyInfo()
 	End if 
 	
-	OBJECT SET ENABLED(*; "btnVectorize"; ds.embeddingInfo.missingCount()#0)
+	OBJECT SET ENABLED(*; "btnVectorize"; $missingCount#0)
 	
 	return This
 	

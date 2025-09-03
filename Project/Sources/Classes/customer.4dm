@@ -29,12 +29,6 @@ Function customersWithSimilarities($targetSimilarity : Real) : Collection
 	var $similarity : Real
 	var $objCustomer : Object
 	
-	
-	If (ds.embeddingInfo.embeddingStatus()=False)
-		throw(999; "Cannot find similarities, no embedding info found. Please generate embeddings")
-		return []
-	End if 
-	
 	$customersX:=ds.customer.query("vector != null").orderBy("ID")
 	
 	For each ($customerX; $customersX)
