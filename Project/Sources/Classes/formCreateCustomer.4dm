@@ -51,7 +51,7 @@ Function onCustomerVectorizedForSearch($embeddingsResult : cs.AIKit.OpenAIEmbedd
 			
 			var $customer : cs.customerEntity
 			var $similarity : Real
-			For each ($customer; ds.customer.query("vector != null"))
+			For each ($customer; ds.customer.query("vector != null and vector.length == :1"; $vector.length))
 				$similarity:=$vector.cosineSimilarity($customer.vector)
 				If ($similarity>=$targetSimilarity)
 					$similarCustomersCol.push({entity: $customer; customerID: $customer.ID; similarity: $similarity})

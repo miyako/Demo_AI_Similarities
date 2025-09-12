@@ -33,7 +33,7 @@ Function customersWithSimilarities($targetSimilarity : Real) : Collection
 	
 	For each ($customerX; $customersX)
 		$customersY:=$customersX.slice($customerX.indexOf()+1)
-		For each ($customerY; $customersY)
+		For each ($customerY; $customersY.query("vector.length == :1"; $customerX.vector.length))
 			$similarity:=$customerX.vector.cosineSimilarity($customerY.vector)
 			If ($similarity>=$targetSimilarity)
 				$customersCol:=This.pushCustomerSimilarity($customersCol; $customerX; $customerY; $similarity)

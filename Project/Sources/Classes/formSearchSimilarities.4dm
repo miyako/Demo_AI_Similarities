@@ -4,6 +4,8 @@ property customersWithSimilarities : Collection
 property selectedCustomer : Object
 property similarCustomers : Collection
 property actions : Object
+property reasoningModels : Collection
+property embeddingModels : Collection
 
 Class constructor($menu : Collection)
 	
@@ -68,6 +70,11 @@ Function onSelectionChange() : cs.formSearchSimilarities
 	$event:=FORM Event
 	
 	Case of 
+		: ($event.objectName="ProvidersListBox")
+			
+			This.reasoningModels:=This.providersListBox.currentItem.reasoningModels.models
+			This.embeddingModels:=This.providersListBox.currentItem.embeddingModels.models
+			
 		: ($event.objectName="customersWithSimilarities")
 			
 			If (This.selectedCustomer=Null)

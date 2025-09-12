@@ -87,9 +87,6 @@
 					"width": 1015,
 					"height": 188,
 					"events": [
-						"onClick",
-						"onHeaderClick",
-						"onDataChange",
 						"onSelectionChange"
 					],
 					"listboxType": "collection",
@@ -104,6 +101,10 @@
 					"fontSize": 12,
 					"headerHeight": "2em",
 					"scrollbarHorizontal": "hidden",
+					"horizontalLineStroke": "transparent",
+					"verticalLineStroke": "automatic",
+					"alternateFill": "automaticAlternate",
+					"sortable": false,
 					"columns": [
 						{
 							"header": {
@@ -117,7 +118,8 @@
 							"dataSource": "This:C1470.name",
 							"width": 300,
 							"enterable": false,
-							"resizable": false
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -131,7 +133,8 @@
 							},
 							"width": 400,
 							"resizable": false,
-							"enterable": false
+							"enterable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -146,7 +149,8 @@
 							},
 							"width": 150,
 							"enterable": false,
-							"resizable": false
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -161,7 +165,8 @@
 							},
 							"width": 150,
 							"enterable": false,
-							"resizable": false
+							"resizable": false,
+							"truncateMode": "none"
 						}
 					]
 				},
@@ -405,20 +410,15 @@
 					"style": "regular",
 					"focusable": false
 				},
-				"List Box2": {
+				"_ReasoningModelsListbox": {
 					"type": "listbox",
 					"left": 858,
 					"top": 491,
 					"width": 280,
 					"height": 172,
-					"events": [
-						"onClick",
-						"onHeaderClick",
-						"onDataChange",
-						"onSelectionChange"
-					],
+					"events": [],
 					"listboxType": "collection",
-					"dataSource": "Form:C1466.providersListBox.currentItem.reasoningModels.models",
+					"dataSource": "Form:C1466.reasoningModels",
 					"currentItemSource": "",
 					"selectionMode": "single",
 					"singleClickEdit": true,
@@ -428,6 +428,11 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 12,
 					"scrollbarHorizontal": "hidden",
+					"horizontalLineStroke": "transparent",
+					"verticalLineStroke": "transparent",
+					"resizingMode": "legacy",
+					"sortable": false,
+					"alternateFill": "automaticAlternate",
 					"columns": [
 						{
 							"header": {
@@ -439,9 +444,10 @@
 								"name": "Footer16"
 							},
 							"dataSource": "This:C1470.model",
-							"width": 274,
+							"width": 0,
 							"enterable": false,
-							"resizable": false
+							"resizable": false,
+							"truncateMode": "none"
 						}
 					]
 				},
@@ -540,29 +546,29 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 16
 				},
-				"List Box3": {
+				"_EmbeddingModelsListbox": {
 					"type": "listbox",
 					"left": 1149,
 					"top": 491,
 					"width": 280,
 					"height": 172,
-					"events": [
-						"onClick",
-						"onHeaderClick",
-						"onDataChange",
-						"onSelectionChange"
-					],
+					"events": [],
 					"listboxType": "collection",
-					"dataSource": "Form:C1466.providersListBox.currentItem.embeddingModels.models",
+					"dataSource": "Form:C1466.embeddingModels",
 					"currentItemSource": "",
 					"selectionMode": "single",
-					"singleClickEdit": true,
+					"singleClickEdit": false,
 					"hideFocusRing": true,
 					"selectedItemsSource": "",
 					"currentItemPositionSource": "",
 					"fontFamily": "Avenir Light",
 					"fontSize": 12,
 					"scrollbarHorizontal": "hidden",
+					"sortable": false,
+					"resizingMode": "legacy",
+					"alternateFill": "automaticAlternate",
+					"horizontalLineStroke": "transparent",
+					"verticalLineStroke": "transparent",
 					"columns": [
 						{
 							"header": {
@@ -574,9 +580,10 @@
 								"name": "Footer17"
 							},
 							"dataSource": "This:C1470.model",
-							"width": 274,
+							"width": 0,
 							"enterable": false,
-							"resizable": false
+							"resizable": false,
+							"truncateMode": "none"
 						}
 					]
 				},
@@ -595,9 +602,9 @@
 				"ProvidersListBox",
 				"provider.name",
 				"provider.url",
+				"provider.keyHidden",
 				"provider.embedding",
-				"provider.reasoning",
-				"provider.keyHidden"
+				"provider.reasoning"
 			]
 		},
 		{
@@ -1618,12 +1625,7 @@
 					"top": 478,
 					"width": 1137,
 					"height": 145,
-					"events": [
-						"onClick",
-						"onHeaderClick",
-						"onDataChange",
-						"onSelectionChange"
-					],
+					"events": [],
 					"listboxType": "collection",
 					"dataSource": "Form:C1466.possibleDuplicateCustomers",
 					"fontFamily": "Avenir Light",
@@ -1632,6 +1634,11 @@
 					"selectionMode": "single",
 					"hideSystemHighlight": false,
 					"scrollbarHorizontal": "hidden",
+					"alternateFill": "automaticAlternate",
+					"resizingMode": "legacy",
+					"horizontalLineStroke": "transparent",
+					"staticColumnCount": 5,
+					"sortable": false,
 					"columns": [
 						{
 							"header": {
@@ -1646,7 +1653,9 @@
 							"dataSource": "This:C1470.similarity",
 							"dataSourceTypeHint": "number",
 							"truncateMode": "none",
-							"width": 143
+							"width": 143,
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -1658,7 +1667,10 @@
 								"name": "Footer19"
 							},
 							"dataSource": "This:C1470.entity.fullname",
-							"width": 193
+							"width": 193,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -1670,7 +1682,10 @@
 								"name": "Footer20"
 							},
 							"dataSource": "This:C1470.entity.email",
-							"width": 205
+							"width": 205,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -1682,7 +1697,10 @@
 								"name": "Footer21"
 							},
 							"dataSource": "This:C1470.entity.phone",
-							"width": 205
+							"width": 205,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -1694,7 +1712,10 @@
 								"name": "Footer22"
 							},
 							"dataSource": "This:C1470.entity.address.str",
-							"width": 375
+							"width": 375,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						}
 					]
 				},
@@ -2027,6 +2048,12 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 12,
 					"scrollbarHorizontal": "hidden",
+					"sortable": false,
+					"alternateFill": "automaticAlternate",
+					"resizingMode": "legacy",
+					"horizontalLineStroke": "transparent",
+					"verticalLineStroke": "automatic",
+					"staticColumnCount": 6,
 					"columns": [
 						{
 							"header": {
@@ -2038,7 +2065,10 @@
 								"name": "Footer13"
 							},
 							"dataSource": "This:C1470.bestMatch",
-							"width": 150
+							"width": 150,
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -2052,7 +2082,10 @@
 							},
 							"dataSource": "This:C1470.similarities.length",
 							"width": 100,
-							"dataSourceTypeHint": "number"
+							"dataSourceTypeHint": "number",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -2064,7 +2097,10 @@
 								"name": "Footer1"
 							},
 							"dataSource": "This:C1470.entity.fullname",
-							"width": 200
+							"width": 200,
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -2076,7 +2112,10 @@
 								"name": "Footer3"
 							},
 							"dataSource": "This:C1470.entity.email",
-							"width": 200
+							"width": 200,
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -2088,7 +2127,10 @@
 								"name": "Footer4"
 							},
 							"dataSource": "This:C1470.entity.phone",
-							"width": 150
+							"width": 150,
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none"
 						},
 						{
 							"header": {
@@ -2100,7 +2142,10 @@
 								"name": "Footer5"
 							},
 							"dataSource": "This:C1470.entity.address.str",
-							"width": 327
+							"width": 327,
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none"
 						}
 					]
 				},
@@ -2110,18 +2155,18 @@
 					"top": 423,
 					"width": 1142,
 					"height": 240,
-					"events": [
-						"onClick",
-						"onHeaderClick",
-						"onDataChange",
-						"onSelectionChange"
-					],
+					"events": [],
 					"listboxType": "collection",
 					"dataSource": "Form:C1466.similarCustomers",
 					"fontFamily": "Avenir Light",
 					"fontSize": 12,
 					"scrollbarHorizontal": "hidden",
 					"hideFocusRing": true,
+					"horizontalLineStroke": "transparent",
+					"resizingMode": "legacy",
+					"sortable": false,
+					"alternateFill": "automaticAlternate",
+					"staticColumnCount": 5,
 					"columns": [
 						{
 							"header": {
@@ -2136,7 +2181,9 @@
 							"dataSource": "This:C1470.similarity",
 							"dataSourceTypeHint": "number",
 							"truncateMode": "none",
-							"width": 250
+							"width": 250,
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -2148,7 +2195,10 @@
 								"name": "Footer8"
 							},
 							"dataSource": "This:C1470.entity.fullname",
-							"width": 200
+							"width": 200,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -2160,7 +2210,10 @@
 								"name": "Footer10"
 							},
 							"dataSource": "This:C1470.entity.email",
-							"width": 200
+							"width": 200,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -2172,7 +2225,10 @@
 								"name": "Footer11"
 							},
 							"dataSource": "This:C1470.entity.phone",
-							"width": 150
+							"width": 150,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						},
 						{
 							"header": {
@@ -2184,7 +2240,10 @@
 								"name": "Footer12"
 							},
 							"dataSource": "This:C1470.entity.address.str",
-							"width": 327
+							"width": 327,
+							"truncateMode": "none",
+							"enterable": false,
+							"resizable": false
 						}
 					]
 				},
@@ -2280,7 +2339,7 @@
 			}
 		}
 	],
-	"geometryStamp": 363,
+	"geometryStamp": 368,
 	"editor": {
 		"groups": {
 			"Group": [
