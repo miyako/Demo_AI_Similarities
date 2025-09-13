@@ -232,6 +232,14 @@ Function searchSimilarCustomers() : cs.formCreateCustomer
 	
 	return This
 	
+Function onCustomerGenerateChatStream($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
+	
+	If ($chatCompletionsResult.success)
+		If ($chatCompletionsResult.terminated)
+			
+		End if 
+	End if 
+	
 Function generateCustomer() : cs.formCreateCustomer
 	
 	This.actions.generatingCustomer:={running: 1; progress: {value: 0; message: "Generating customer with AI"}; timing: 0}
@@ -249,8 +257,22 @@ Function generateCustomer() : cs.formCreateCustomer
 	var $dataGenerator : cs.AI_DataGenerator
 	$dataGenerator:=cs.AI_DataGenerator.new(This.providersGen.currentValue; This.modelsGen.currentValue)
 	
+	var $stream : Boolean
+	$stream:=False
+	
 	var $customerGenerator : cs.AIKit.OpenAIChatHelper
-	$customerGenerator:=$dataGenerator.AIClient.chat.create($dataGenerator.customerSystemPrompt; {model: This.modelsGen.currentValue; onResponse: This.onRandomCustomerGenerated})
+	If ($stream)
+		$customerGenerator:=$dataGenerator.AIClient.chat.create($dataGenerator.customerSystemPrompt; \
+			{model: This.modelsGen.currentValue; \
+			stream: $stream; \
+			formula: This.onCustomerGenerateChatStream; \
+			onResponse: This.onRandomCustomerGenerated})
+	Else 
+		$customerGenerator:=$dataGenerator.AIClient.chat.create($dataGenerator.customerSystemPrompt; \
+			{model: This.modelsGen.currentValue; \
+			stream: $stream; \
+			onResponse: This.onRandomCustomerGenerated})
+	End if 
 	
 	var $prompt : Text
 	$prompt:="generate 1 customer"

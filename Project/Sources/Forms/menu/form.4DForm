@@ -1200,6 +1200,35 @@
 					"fontFamily": "Avenir Light",
 					"fontSize": 13,
 					"focusable": false
+				},
+				"prompt-bg#2": {
+					"type": "picture",
+					"top": 98,
+					"left": 23,
+					"width": 548,
+					"height": 577,
+					"picture": "/RESOURCES/Images/prompt-background.svg",
+					"pictureFormat": "scaled",
+					"bottom": 675
+				},
+				"prompt#2": {
+					"type": "input",
+					"left": 23,
+					"top": 98,
+					"width": 548,
+					"height": 577,
+					"enterable": false,
+					"contextMenu": "none",
+					"fill": "transparent",
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dragging": "none",
+					"dropping": "none",
+					"dataSource": "Form:C1466.customerGeneratorChatResult",
+					"stroke": "#FFFFFF",
+					"fontWeight": "bold",
+					"hideFocusRing": true
 				}
 			}
 		},
@@ -2339,7 +2368,7 @@
 			}
 		}
 	],
-	"geometryStamp": 368,
+	"geometryStamp": 391,
 	"editor": {
 		"groups": {
 			"Group": [
@@ -2452,7 +2481,14 @@
 		"activeView": "View 1",
 		"defaultView": "View 1",
 		"views": {
-			"View 1": {}
+			"View 1": {},
+			"bg": {
+				"visible": false,
+				"objects": [
+					"prompt-bg#2",
+					"prompt#2"
+				]
+			}
 		}
 	},
 	"method": "method.4dm",

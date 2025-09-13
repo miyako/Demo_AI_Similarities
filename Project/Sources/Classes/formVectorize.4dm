@@ -18,6 +18,8 @@ property customersToVectorize : cs.customerSelection
 property vectorizeStartTime : Integer
 property vectorizeCount : Integer
 
+property customerGeneratorChatResult : Text
+
 Class constructor($menu : Collection)
 	
 	$menu:=$menu=Null ? [] : $menu
@@ -78,22 +80,36 @@ Function onAddressGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompleti
 	
 Function onCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
-	If (Form#Null)
-		var $quantity : Integer
-		$quantity:=Form.actions.generatingCustomers.quantity
-		var $result : Object
-		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
-		If ($result.success)
-			ds.customer.fromCollection($result.response)
-			Form.generated:=ds.customer.getCount()-Form.alreadyThere
-			Form.actions.generatingCustomers.progress.value:=Int(Form.generated/$quantity*100)
-			Form.actions.generatingCustomers.progress.message:="Generating customers "+String(Form.generated)+"/"+String($quantity)
-		Else 
-			Form.failedAttempts+=1
+	If ($chatCompletionsResult.success)
+		If (Form#Null)
+			var $quantity : Integer
+			$quantity:=Form.actions.generatingCustomers.quantity
+			var $result : Object
+			If ($chatCompletionsResult.terminated)
+				If ($chatCompletionsResult.choice.message=Null)
+					//cs.AIKit.OpenAIChatCompletionsResult is immutable
+					$chatCompletionsResult:=JSON Parse(JSON Stringify($chatCompletionsResult))
+					$chatCompletionsResult.choice.message:={content: Form.customerGeneratorChatResult}
+				End if 
+				$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
+				If ($result.success)
+					ds.customer.fromCollection($result.response)
+					Form.generated:=ds.customer.getCount()-Form.alreadyThere
+					Form.actions.generatingCustomers.progress.value:=Int(Form.generated/$quantity*100)
+					Form.actions.generatingCustomers.progress.message:="Generating customers "+String(Form.generated)+"/"+String($quantity)
+				Else 
+					Form.failedAttempts+=1
+				End if 
+				
+				Form.refreshStatus().populateAddresses().generateCustomers()
+				
+			Else 
+				Form.customerGeneratorChatResult+=$chatCompletionsResult.choice.delta.text
+				$pos:=Length(Form.customerGeneratorChatResult)+1
+				HIGHLIGHT TEXT(*; "prompt#2"; $pos; $pos)
+			End if 
+			
 		End if 
-		
-		Form.refreshStatus().populateAddresses().generateCustomers()
-		
 	End if 
 	
 Function onLoad() : cs.formVectorize
@@ -106,6 +122,7 @@ Function onLoad() : cs.formVectorize
 	
 	OBJECT SET VISIBLE(*; "customerGen@"; False)
 	OBJECT SET VISIBLE(*; "embedding@"; False)
+	OBJECT SET VISIBLE(*; "prompt@"; False)
 	
 	return This
 	
@@ -121,6 +138,28 @@ Function onPageChange() : cs.formVectorize
 	End case 
 	
 	return This
+	
+Function onCustomerGenerateChatStream($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
+	
+	If ($chatCompletionsResult.success)
+		If ($chatCompletionsResult.terminated)
+			
+			//$chatCompletionsResult.request.response
+			
+			$chatCompletionsResult:=JSON Parse(Form.customerGeneratorChatResult; Is object)
+			
+			$AIResponse:=Form.getAIStructuredResponse($chatCompletionsResult; Is collection)
+			
+			
+			//var $OpenAI : cs.AIKit.OpenAI
+			//$OpenAI:=Form.customerGenerator.chat._client
+			
+			
+		Else 
+			Form.customerGeneratorChatResult+=$chatCompletionsResult.choice.delta.text
+		End if 
+	End if 
+	
 	
 Function onClicked() : cs.formVectorize
 	
@@ -154,7 +193,20 @@ Function onClicked() : cs.formVectorize
 			This.failedAttempts:=0
 			This.maxFailedAttempts:=10
 			
-			This.customerGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.customerSystemPrompt; {model: This.modelsGen.currentValue; onResponse: This.onCustomerGenerated})
+			var $stream : Boolean
+			$stream:=True
+			
+			This.customerGeneratorChatResult:=""
+			
+			var $options : cs.AIKit.OpenAIChatCompletionsParameters
+			$options:=cs.AIKit.OpenAIChatCompletionsParameters.new()
+			$options.model:=This.modelsGen.currentValue
+			$options.formula:=This.onCustomerGenerated
+			$options.stream:=$stream
+			
+			This.customerGenerator:=This.dataGenerator.AIClient.chat.create(\
+				This.dataGenerator.customerSystemPrompt; $options)
+			
 			This.addressGenerator:=This.dataGenerator.AIClient.chat.create(This.dataGenerator.addressSystemPrompt; {model: This.modelsGen.currentValue; onResponse: This.onAddressGenerated})
 			
 			This.alreadyThere:=ds.customer.getCount()
@@ -212,6 +264,7 @@ Function vectorizeCustomers() : cs.formVectorize
 	If (This.customersToVectorize.length#0)
 		OBJECT SET VISIBLE(*; "embedding@"; True)
 		OBJECT SET VISIBLE(*; "btnVectorize"; False)
+		OBJECT SET VISIBLE(*; "prompt@"; True)
 		var $customer : cs.customerEntity
 		$customer:=This.customersToVectorize.first()
 		This.customersToVectorize:=This.customersToVectorize.slice(1)
@@ -219,6 +272,7 @@ Function vectorizeCustomers() : cs.formVectorize
 	Else 
 		OBJECT SET VISIBLE(*; "embedding@"; False)
 		OBJECT SET VISIBLE(*; "btnVectorize"; True)
+		OBJECT SET VISIBLE(*; "prompt@"; False)
 		Form.refreshStatus()
 		Form.actions.embedding.info.embeddingDate:=Current date
 		Form.actions.embedding.info.embeddingTime:=Current time
@@ -277,6 +331,7 @@ Function generateCustomers() : cs.formVectorize
 	If ($toGenerate>0) && (This.failedAttempts<This.maxFailedAttempts)
 		OBJECT SET VISIBLE(*; "customerGen@"; True)
 		OBJECT SET VISIBLE(*; "btnGenerateCustomers"; False)
+		OBJECT SET VISIBLE(*; "prompt@"; True)
 		var $prompt : Text
 		$prompt:="generate "+String($toGenerate)+" customers"
 		Form.customerGenerator.prompt($prompt)
@@ -284,6 +339,7 @@ Function generateCustomers() : cs.formVectorize
 		If (0=This.addressesToGenerate())
 			OBJECT SET VISIBLE(*; "customerGen@"; False)
 			OBJECT SET VISIBLE(*; "btnGenerateCustomers"; True)
+			OBJECT SET VISIBLE(*; "prompt@"; False)
 		End if 
 	End if 
 	
@@ -308,6 +364,7 @@ Function refreshStatus() : cs.formVectorize
 	End if 
 	
 	OBJECT SET ENABLED(*; "btnVectorize"; $missingCount#0)
+	OBJECT SET VISIBLE(*; "prompt@"; $missingCount=0)
 	
 	return This
 	
