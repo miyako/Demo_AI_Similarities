@@ -2507,12 +2507,13 @@
 				"embeddingSpinner"
 			]
 		},
-		"activeView": "View 1",
+		"activeView": "bg",
 		"defaultView": "View 1",
 		"views": {
-			"View 1": {},
+			"View 1": {
+				"visible": false
+			},
 			"bg": {
-				"visible": false,
 				"objects": [
 					"prompt-bg#2",
 					"prompt#2",

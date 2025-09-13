@@ -37,23 +37,33 @@ Function onCustomerVectorized($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResul
 	
 	If (Form#Null)
 		If ($embeddingsResult.success)
-			var $customer : cs.customerEntity
-			$customer:=ds.customer.get($embeddingsResult.request.headers.customer)
-			If ($customer#Null)
-				$customer.vector:=$embeddingsResult.vector
-				$customer.save()
+			
+			If ($embeddingsResult.terminated)
+				
+				var $customer : cs.customerEntity
+				$customer:=ds.customer.get($embeddingsResult.request.headers.customer)
+				If ($customer#Null)
+					$customer.vector:=$embeddingsResult.vector
+					$customer.save()
+				End if 
+				var $total; $progress : Integer
+				$total:=Form.vectorizeCount
+				$progress:=Form.vectorizeCount-Form.customersToVectorize.length
+				Form.actions.embedding.progress.value:=Int($progress/$total*100)
+				Form.actions.embedding.progress.message:="Generating embeddings "+String($progress)+"/"+String($total)
+				Form.actions.embedding.info.duration:=(Milliseconds-Form.vectorizeStartTime)
+				
+				Form.vectorizeCustomers()
+				
+			Else 
+				
 			End if 
-			var $total; $progress : Integer
-			$total:=Form.vectorizeCount
-			$progress:=Form.vectorizeCount-Form.customersToVectorize.length
-			Form.actions.embedding.progress.value:=Int($progress/$total*100)
-			Form.actions.embedding.progress.message:="Generating embeddings "+String($progress)+"/"+String($total)
-			Form.actions.embedding.info.duration:=(Milliseconds-Form.vectorizeStartTime)
+			
 		Else 
-			Form.failedAttempts+=1
+			OBJECT SET VISIBLE(*; "embedding@"; False)
+			OBJECT SET VISIBLE(*; "btnVectorize"; True)
+			Form.refreshStatus()
 		End if 
-		
-		Form.vectorizeCustomers()
 		
 	End if 
 	
@@ -259,26 +269,36 @@ Function onDataChange() : cs.formVectorize
 	
 Function vectorizeCustomers() : cs.formVectorize
 	
+	OBJECT SET VISIBLE(*; "prompt@#2"; False)
+	
 	If (This.customersToVectorize.length#0)
 		OBJECT SET VISIBLE(*; "embedding@"; True)
 		OBJECT SET VISIBLE(*; "btnVectorize"; False)
-		OBJECT SET VISIBLE(*; "prompt@#2"; True)
 		var $customer : cs.customerEntity
 		$customer:=This.customersToVectorize.first()
 		This.customersToVectorize:=This.customersToVectorize.slice(1)
-		This.vectorizer.vectorize($customer.stringify(); {onResponse: This.onCustomerVectorized; extraHeaders: {customer: $customer.getKey(dk key as string)}})
+		
+		var $stream : Boolean
+		$stream:=True
+		
+		var $options : cs.AIKit.OpenAIEmbeddingsParameters
+		$options:=cs.AIKit.OpenAIEmbeddingsParameters.new()
+		//model is not an option
+		$options.formula:=This.onCustomerVectorized
+		//stream is not an option
+		$options.extraHeaders:={customer: $customer.getKey(dk key as string)}
+		
+		This.vectorizer.vectorize($customer.stringify(); $options)
+		
 	Else 
 		OBJECT SET VISIBLE(*; "embedding@"; False)
 		OBJECT SET VISIBLE(*; "btnVectorize"; True)
-		OBJECT SET VISIBLE(*; "prompt@#2"; False)
-		Form.refreshStatus()
 		Form.actions.embedding.info.embeddingDate:=Current date
 		Form.actions.embedding.info.embeddingTime:=Current time
 		Form.actions.embedding.info.save()
-		
-		Form.refreshStatus()
-		
 	End if 
+	
+	Form.refreshStatus()
 	
 	Form.actions:=Form.actions
 	
@@ -364,7 +384,6 @@ Function refreshStatus() : cs.formVectorize
 	End if 
 	
 	OBJECT SET ENABLED(*; "btnVectorize"; $missingCount#0)
-	OBJECT SET VISIBLE(*; "prompt@#2"; $missingCount=0)
 	
 	return This
 	
