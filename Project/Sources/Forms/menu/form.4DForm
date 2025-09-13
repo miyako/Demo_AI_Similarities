@@ -641,21 +641,23 @@
 					"type": "text",
 					"text": "Provider:",
 					"top": 450,
-					"left": 891,
+					"left": 941,
 					"width": 231,
 					"height": 18,
 					"fontFamily": "Avenir Light",
-					"fontSize": 13
+					"fontSize": 13,
+					"textAlign": "right"
 				},
 				"Text17": {
 					"type": "text",
 					"text": "Model:",
 					"top": 479,
-					"left": 891,
+					"left": 941,
 					"width": 231,
 					"height": 18,
 					"fontFamily": "Avenir Light",
-					"fontSize": 13
+					"fontSize": 13,
+					"textAlign": "right"
 				},
 				"btnVectorize": {
 					"type": "button",
@@ -715,21 +717,23 @@
 					"type": "text",
 					"text": "Provider:",
 					"top": 450,
-					"left": 284,
+					"left": 332,
 					"width": 230,
 					"height": 18,
 					"fontFamily": "Avenir Light",
-					"fontSize": 13
+					"fontSize": 13,
+					"textAlign": "right"
 				},
 				"Text20": {
 					"type": "text",
 					"text": "Model:",
-					"top": 488,
-					"left": 283,
+					"top": 480,
+					"left": 331,
 					"width": 231,
 					"height": 18,
 					"fontFamily": "Avenir Light",
-					"fontSize": 13
+					"fontSize": 13,
+					"textAlign": "right"
 				},
 				"customerGenSpinner": {
 					"type": "spinner",
@@ -2397,7 +2401,7 @@
 			}
 		}
 	],
-	"geometryStamp": 394,
+	"geometryStamp": 455,
 	"editor": {
 		"groups": {
 			"Group": [
@@ -2507,13 +2511,12 @@
 				"embeddingSpinner"
 			]
 		},
-		"activeView": "bg",
+		"activeView": "View 1",
 		"defaultView": "View 1",
 		"views": {
-			"View 1": {
-				"visible": false
-			},
+			"View 1": {},
 			"bg": {
+				"visible": false,
 				"objects": [
 					"prompt-bg#2",
 					"prompt#2",
