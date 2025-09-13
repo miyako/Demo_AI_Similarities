@@ -6,6 +6,8 @@ property newCustomer : cs.customerEntity
 property possibleDuplicateCustomers : Collection
 property actions : Object
 
+property randomCustomerGeneratorChatResult : Text
+
 Class constructor($menu : Collection)
 	
 	$menu:=$menu=Null ? [] : $menu
@@ -20,23 +22,61 @@ Class constructor($menu : Collection)
 	
 Function onAddressFormatted($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
-	If (Form#Null)
-		OBJECT SET VISIBLE(*; "addressFormattingSpinner"; False)
-		var $result : Object
-		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is object)
-		Form.newCustomer.address:=cs.address.new($result.response)
-		Form.refreshStatus()
+	If ($chatCompletionsResult.success)
+		If (Form#Null)
+			var $result : Object
+			If ($chatCompletionsResult.terminated)
+				If ($chatCompletionsResult.choice.message=Null)
+					//cs.AIKit.OpenAIChatCompletionsResult is immutable
+					$chatCompletionsResult:=JSON Parse(JSON Stringify($chatCompletionsResult))
+					$chatCompletionsResult.choice.message:={content: Form.randomCustomerGeneratorChatResult}
+				End if 
+				
+				$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is object)
+				Form.newCustomer.address:=cs.address.new($result.response)
+				
+				OBJECT SET VISIBLE(*; "addressFormattingSpinner"; False)
+				OBJECT SET VISIBLE(*; "prompt@#3"; False)
+				
+				Form.refreshStatus()
+				
+			Else 
+				Form.randomCustomerGeneratorChatResult+=$chatCompletionsResult.choice.delta.text
+				$pos:=Length(Form.randomCustomerGeneratorChatResult)+1
+				HIGHLIGHT TEXT(*; "prompt#3"; $pos; $pos)
+			End if 
+			
+		End if 
 	End if 
 	
 Function onRandomCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
 	
-	If (Form#Null)
-		OBJECT SET VISIBLE(*; "customerGenMessage"; False)
-		OBJECT SET VISIBLE(*; "customerGenSpinner@"; False)
-		var $result : Object
-		$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is object)
-		Form.newCustomer:=ds.customer.newCustomerFromObject($result.response)
-		Form.refreshStatus()
+	If ($chatCompletionsResult.success)
+		If (Form#Null)
+			var $result : Object
+			If ($chatCompletionsResult.terminated)
+				If ($chatCompletionsResult.choice.message=Null)
+					//cs.AIKit.OpenAIChatCompletionsResult is immutable
+					$chatCompletionsResult:=JSON Parse(JSON Stringify($chatCompletionsResult))
+					$chatCompletionsResult.choice.message:={content: Form.randomCustomerGeneratorChatResult}
+				End if 
+				
+				$result:=Form.getAIStructuredResponse($chatCompletionsResult; Is object)
+				Form.newCustomer:=ds.customer.newCustomerFromObject($result.response)
+				
+				OBJECT SET VISIBLE(*; "customerGenMessage"; False)
+				OBJECT SET VISIBLE(*; "customerGenSpinner@"; False)
+				OBJECT SET VISIBLE(*; "prompt@#3"; False)
+				
+				Form.refreshStatus()
+				
+			Else 
+				Form.randomCustomerGeneratorChatResult+=$chatCompletionsResult.choice.delta.text
+				$pos:=Length(Form.randomCustomerGeneratorChatResult)+1
+				HIGHLIGHT TEXT(*; "prompt#3"; $pos; $pos)
+			End if 
+			
+		End if 
 	End if 
 	
 Function onCustomerVectorizedForSearch($embeddingsResult : cs.AIKit.OpenAIEmbeddingsResult)
@@ -232,14 +272,6 @@ Function searchSimilarCustomers() : cs.formCreateCustomer
 	
 	return This
 	
-Function onCustomerGenerateChatStream($chatCompletionsResult : cs.AIKit.OpenAIChatCompletionsResult)
-	
-	If ($chatCompletionsResult.success)
-		If ($chatCompletionsResult.terminated)
-			
-		End if 
-	End if 
-	
 Function generateCustomer() : cs.formCreateCustomer
 	
 	This.actions.generatingCustomer:={running: 1; progress: {value: 0; message: "Generating customer with AI"}; timing: 0}
@@ -253,26 +285,25 @@ Function generateCustomer() : cs.formCreateCustomer
 	OBJECT SET VISIBLE(*; "customerGen@"; True)
 	OBJECT SET VISIBLE(*; "addressFormatting@"; False)
 	OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
+	OBJECT SET VISIBLE(*; "prompt@#3"; True)
 	
 	var $dataGenerator : cs.AI_DataGenerator
 	$dataGenerator:=cs.AI_DataGenerator.new(This.providersGen.currentValue; This.modelsGen.currentValue)
 	
 	var $stream : Boolean
-	$stream:=False
+	$stream:=True
+	
+	This.randomCustomerGeneratorChatResult:=""
+	
+	var $options : cs.AIKit.OpenAIChatCompletionsParameters
+	$options:=cs.AIKit.OpenAIChatCompletionsParameters.new()
+	$options.model:=This.modelsGen.currentValue
+	$options.formula:=This.onRandomCustomerGenerated
+	$options.stream:=$stream
 	
 	var $customerGenerator : cs.AIKit.OpenAIChatHelper
-	If ($stream)
-		$customerGenerator:=$dataGenerator.AIClient.chat.create($dataGenerator.customerSystemPrompt; \
-			{model: This.modelsGen.currentValue; \
-			stream: $stream; \
-			formula: This.onCustomerGenerateChatStream; \
-			onResponse: This.onRandomCustomerGenerated})
-	Else 
-		$customerGenerator:=$dataGenerator.AIClient.chat.create($dataGenerator.customerSystemPrompt; \
-			{model: This.modelsGen.currentValue; \
-			stream: $stream; \
-			onResponse: This.onRandomCustomerGenerated})
-	End if 
+	$customerGenerator:=$dataGenerator.AIClient.chat.create(\
+		$dataGenerator.customerSystemPrompt; $options)
 	
 	var $prompt : Text
 	$prompt:="generate 1 customer"
@@ -288,15 +319,28 @@ Function formatAddress() : cs.formCreateCustomer
 	
 	OBJECT SET VISIBLE(*; "addressFormatting@"; True)
 	OBJECT SET VISIBLE(*; "similaritiesSearch@"; False)
+	OBJECT SET VISIBLE(*; "prompt@#3"; True)
 	
 	var $textToFormat : Text
 	$textToFormat:=(OBJECT Get name(Object with focus)="textToFormat") ? Get edited text : This.actions.formattingAddress.textToFormat
 	
+	var $stream : Boolean
+	$stream:=True
+	
+	This.randomCustomerGeneratorChatResult:=""
+	
 	var $addressFormatter : cs.AI_AddressFormatter
 	$addressFormatter:=cs.AI_AddressFormatter.new(This.providersGen.currentValue; This.modelsGen.currentValue)
 	
+	var $options : cs.AIKit.OpenAIChatCompletionsParameters
+	$options:=cs.AIKit.OpenAIChatCompletionsParameters.new()
+	$options.model:=This.modelsGen.currentValue
+	$options.formula:=This.onAddressFormatted
+	$options.stream:=$stream
+	
 	var $formatter : cs.AIKit.OpenAIChatHelper
-	$formatter:=$addressFormatter.AIClient.chat.create($addressFormatter.formatterSystemPrompt; {model: This.modelsGen.currentValue; onResponse: This.onAddressFormatted})
+	$formatter:=$addressFormatter.AIClient.chat.create(\
+		$addressFormatter.formatterSystemPrompt; $options)
 	
 	var $prompt : Text
 	$prompt:="Here is the address to format into json "+String($textToFormat)

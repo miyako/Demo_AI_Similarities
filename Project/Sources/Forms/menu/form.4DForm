@@ -2056,6 +2056,35 @@
 					"fontSize": 13,
 					"display": false,
 					"visibility": "hidden"
+				},
+				"prompt-bg#3": {
+					"type": "picture",
+					"top": 98,
+					"left": 23,
+					"width": 548,
+					"height": 577,
+					"picture": "/RESOURCES/Images/prompt-background.svg",
+					"pictureFormat": "scaled",
+					"bottom": 675
+				},
+				"prompt#3": {
+					"type": "input",
+					"left": 23,
+					"top": 98,
+					"width": 548,
+					"height": 577,
+					"enterable": false,
+					"contextMenu": "none",
+					"fill": "transparent",
+					"borderStyle": "none",
+					"fontFamily": "Avenir Light",
+					"fontSize": 13,
+					"dragging": "none",
+					"dropping": "none",
+					"dataSource": "Form:C1466.randomCustomerGeneratorChatResult",
+					"stroke": "#FFFFFF",
+					"fontWeight": "bold",
+					"hideFocusRing": true
 				}
 			}
 		},
@@ -2368,7 +2397,7 @@
 			}
 		}
 	],
-	"geometryStamp": 391,
+	"geometryStamp": 394,
 	"editor": {
 		"groups": {
 			"Group": [
@@ -2486,7 +2515,9 @@
 				"visible": false,
 				"objects": [
 					"prompt-bg#2",
-					"prompt#2"
+					"prompt#2",
+					"prompt-bg#3",
+					"prompt#3"
 				]
 			}
 		}
