@@ -6,6 +6,8 @@ property url_openAIModels : Text
 property url_installOllama : Text
 property url_ollamaModels : Text
 property url_AIKitProviders : Text
+property reasoningModels : Collection
+property embeddingModels : Collection
 
 Class constructor($menu : Collection)
 	
@@ -112,9 +114,9 @@ Function onClicked() : cs.formIntro
 	
 	return This
 	
-Function onSelectionChange() : cs.formIntro
+Function onSelectionChange($objectName : Text) : cs.formIntro
 	
-	Super.onSelectionChange()
+	Super.onSelectionChange($objectName)
 	
 	If (This.providersListBox.currentItem=Null)
 		OBJECT SET ENABLED(*; "btnDelete"; False)
@@ -164,7 +166,7 @@ Function refreshProviderSettings() : cs.formIntro
 		LISTBOX SELECT ROW(*; "ProvidersListBox"; 1)
 	End if 
 	
-	return This.onSelectionChange()
+	return This.onSelectionChange("ProvidersListBox")
 	
 Function updateProviderSettings() : cs.formIntro
 	

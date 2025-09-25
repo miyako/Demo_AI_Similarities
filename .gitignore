@@ -19,3 +19,5 @@ ehthumbs.db
 Thumbs.db
 Settings/buildApp.4DSettings
 OpenAI.token
+**.4BK
+backupHistory.json

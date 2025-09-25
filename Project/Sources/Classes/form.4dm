@@ -37,7 +37,7 @@ Function onDataChange() : cs.form
 	
 	return This
 	
-Function onSelectionChange() : cs.form
+Function onSelectionChange($objectName : Text) : cs.form
 	
 	return This
 	

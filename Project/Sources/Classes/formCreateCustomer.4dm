@@ -41,6 +41,7 @@ Function onAddressFormatted($chatCompletionsResult : cs.AIKit.OpenAIChatCompleti
 				Form.refreshStatus()
 				
 			Else 
+				var $pos : Integer
 				Form.randomCustomerGeneratorChatResult+=$chatCompletionsResult.choice.delta.text
 				$pos:=Length(Form.randomCustomerGeneratorChatResult)+1
 				HIGHLIGHT TEXT(*; "prompt#3"; $pos; $pos)
@@ -71,6 +72,7 @@ Function onRandomCustomerGenerated($chatCompletionsResult : cs.AIKit.OpenAIChatC
 				Form.refreshStatus()
 				
 			Else 
+				var $pos : Integer
 				Form.randomCustomerGeneratorChatResult+=$chatCompletionsResult.choice.delta.text
 				$pos:=Length(Form.randomCustomerGeneratorChatResult)+1
 				HIGHLIGHT TEXT(*; "prompt#3"; $pos; $pos)
